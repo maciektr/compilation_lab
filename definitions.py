@@ -7,8 +7,9 @@ reserved = {
 }
 
 tokens = (
-    'INTNUM',       #DONE, NOT TESTED
-    'REAL',         #DONE, NOT TESTED
+    'ID',           #ISSUE: Assigns "IF", "WHILE", etc. as IDs
+    'INTNUM',       #ISSUE: ASSIGNS REAL AS INTNUM + '.' + INTNUM
+    'REAL',         #ISSUE: ASSIGNS REAL AS INTNUM + '.' + INTNUM
     'PLUS',         #DONE, NOT TESTED  
     'MINUS',        #DONE, NOT TESTED
     'MUL',          #DONE, NOT TESTED
@@ -46,7 +47,6 @@ tokens = (
     'CONTINUE',     #
     'RETURN',       #
     'PRINT',        #
-    'ID',           #
     'STRING',       #
     *reserved.values()
 )
