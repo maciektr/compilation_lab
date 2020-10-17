@@ -5,57 +5,44 @@ reserved = {
     'ones': 'ONES',
     'eye': 'EYE',
     'if': 'IF',
-    'while': 'WHILE',
-    'for': 'FOR',
     'else': 'ELSE',
+    'for': 'FOR',
+    'while': 'WHILE',
+    'break': 'BREAK',
+    'continue': 'CONTINUE',
+    'return': 'RETURN',
+    'print': 'PRINT',
 }
 
 tokens = (
-    'ID',           #ISSUE: Assigns "IF", "WHILE", etc. as IDs
-    'INTNUM',       #ISSUE: ASSIGNS REAL AS INTNUM + '.' + INTNUM
-    'REAL',         #ISSUE: ASSIGNS REAL AS INTNUM + '.' + INTNUM
-    'PLUS',         #DONE, NOT TESTED
-    'MINUS',        #DONE, NOT TESTED
-    'MUL',          #DONE, NOT TESTED
-    'DIVIDE',       #DONE, NOT TESTED
-    'LPAREN',       #DONE, NOT TESTED
-    'RPAREN',       #DONE, NOT TESTED
-    'LSQPAREN',     #DONE, NOT TESTED
-    'RSQPAREN',     #DONE, NOT TESTED
-    'LBRACK',       #DONE, NOT TESTED
-    'RBRACK',       #DONE, NOT TESTED
-    'DOTPLUS',      #DONE, NOT TESTED
-    'DOTMINUS',     #DONE, TESTED
-    'DOTMUL',       #DONE, NOT TESTED
-    'DOTDIV',       #DONE, NOT TESTED
-    'PLUSASGN',     #DONE, NOT TESTED
-    'SUBASSIGN',    #DONE, NOT TESTED
-    'MULASSIGN',      #DONE, NOT TESTED
-    'DIVASSIGN',      #DONE, NOT TESTED
-    'LESSTHAN',     #DONE, NOT TESTED
-    'GREATERTHAN',  #DONE, NOT TESTED
-    'LESSOREQ',     #DONE, NOT TESTED
-    'GREATEROREQ',  #DONE, NOT TESTED
-    'NOTEQ',        #DONE, NOT TESTED
-    'EQUAL',        #DONE, NOT TESTED
-    'RANGEOP',      #DONE, NOT TESTED
-    'TRANSPOSE',    #DONE, NOT TESTED
-    'BREAK',        #
-    'CONTINUE',     #
-    'RETURN',       #
-    'PRINT',        #
-    'STRING',       #
+    'ID',
+    'REAL',
+    'INTNUM',
+    'STRING',
+    'DOTADD',
+    'DOTSUB',
+    'DOTMUL',
+    'DOTDIV',
+    'PLUSASGN',
+    'SUBASSIGN',
+    'MULASSIGN',
+    'DIVASSIGN',
+    'LESSTHAN',
+    'GREATERTHAN',
+    'LESSOREQ',
+    'GREATEROREQ',
+    'NOTEQ',
+    'EQUAL',
+    'RANGEOP',
     *reserved.values()
 )
 
-t_LSQPAREN  = r'\['
-t_RSQPAREN  = r'\]'
-t_LBRACK  = r'\{'
-t_RBRACK  = r'\}'
-t_DOTPLUS = r'\.\+'
-t_DOTMINUS = r'\.-'
+t_DOTADD = r'\.\+'
+t_DOTSUB = r'\.-'
+
 t_DOTMUL = r'\.\*'
 t_DOTDIV = r'\./'
+
 t_PLUSASGN = r'\+\='
 t_SUBASSIGN = r'-\='
 t_MULASSIGN = r'\*\='
@@ -72,7 +59,6 @@ def t_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     t.type = reserved.get(t.value,'ID')
     return t
-    # doesn't work, assigns "IF", "WHILE", etc as IDs
 
 def t_REAL(t):
     r'-?([0-9]*)?\.([0-9]+([eE][-+]?[0-9]+)?)?'
@@ -80,7 +66,6 @@ def t_REAL(t):
         t.value = t.value[:-1]
     t.value = float(t.value if t.value else 0)
     return t
-    #doesn't work, assigns real numbers as INTNUM + '.' + INTNUM
 
 def t_INTNUM(t):
     r'\d+'
@@ -98,9 +83,10 @@ def t_newline(t):
 t_ignore  = ' \t'
 t_ignore_COMMENT = r'\#.*'
 
-
 literals = [
-    '+', '-', '*', '/', '=', "'", ';', '(', ')', "'", '"', ',',
+    '+', '-', '*', '/', '=', "'", ';', "'", '"', ',',
+    '(', ')', '[', ']', '{', '}',
+
 ]
 
 def t_error(t):
