@@ -16,5 +16,5 @@ if __name__ == '__main__':
     lexer(text)
 
     for tok in lexer.token():
-        print("(%d): %s(%s)" % tok)
+        print("(%d, %d): %s(%s)" % tok)
         # print(tok)
