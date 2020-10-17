@@ -1,10 +1,10 @@
+import ply.lex as lex
+
 reserved = {
     'zeros': 'ZEROS',
     'ones': 'ONES',
     'eye': 'EYE',
 }
-
-import ply.lex as lex
 
 tokens = (
     'INTNUM',       #DONE, NOT TESTED
@@ -109,8 +109,6 @@ def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
 
-
-lexer = lex.lex()
 
 literals = [
     '+', '-', '*', '/', '=', "'", ';', '(', ')',
