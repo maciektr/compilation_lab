@@ -1,5 +1,3 @@
-import ply.lex as lex
-
 reserved = {
     'zeros': 'ZEROS',
     'ones': 'ONES',
@@ -61,7 +59,7 @@ def t_ID(t):
     return t
 
 def t_REAL(t):
-    r'-?([0-9]*)?\.([0-9]+([eE][-+]?[0-9]+)?)?'
+    r'([0-9]*)?\.([0-9]+([eE][-+]?[0-9]+)?)?'
     if t.value.endswith('.'):
         t.value = t.value[:-1]
     t.value = float(t.value if t.value else 0)
@@ -73,7 +71,7 @@ def t_INTNUM(t):
     return t
 
 def t_STRING(t):
-    r'\".*\"'
+    r'\".*?\"'
     return t
 
 def t_newline(t):
