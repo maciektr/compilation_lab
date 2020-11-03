@@ -1,11 +1,12 @@
 import sys
 import ply.lex as lex
 from scanner import Scanner
+from parser import Parser
 
 
 if __name__ == '__main__':
     try:
-        filename = sys.argv[1] if len(sys.argv) > 1 else "example.txt"
+        filename = sys.argv[1] if len(sys.argv) > 1 else "examples/example1.m"
         with open(filename, "r") as file:
             text = file.read()
     except IOError:
@@ -13,8 +14,11 @@ if __name__ == '__main__':
         sys.exit(0)
 
     lexer = Scanner()
-    lexer(text)
+    # lexer(text)
 
-    for tok in lexer.token():
-        print("(%d, %d): %s(%s)" % tok)
+    # for tok in lexer.token():
+        # print("(%d, %d): %s(%s)" % tok)
         # print(tok)
+
+    parser = Parser(lexer.get_lexer())
+    parser.parse(text)

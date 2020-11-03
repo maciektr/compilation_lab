@@ -2,7 +2,7 @@ import ply
 import ply.lex as lex;
 from typing import Callable
 
-from definitions import *
+from scanner_defs import *
 
 class Scanner:
     def __init__(self):
@@ -12,6 +12,9 @@ class Scanner:
     def __call__(self, text: str):
         self.last_text = text
         self.lexer.input(text)
+
+    def get_lexer(self):
+        return self.lexer
 
     def find_column(self, token):
         input = self.last_text

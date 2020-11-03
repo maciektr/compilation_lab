@@ -7,7 +7,7 @@ precedence = (
 symtab = {}
 
 def p_error(p):
-    print("parsing error\n")
+    print("parsing error", p)
 
 def p_start(p):
     """start : EXPRESSION
