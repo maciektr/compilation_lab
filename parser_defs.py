@@ -82,6 +82,10 @@ def p_numerical_num(p):
     """NUMERICAL : INTNUM
                  | REAL"""
 
+def p_num_list_extend(p):
+    """VALUES : EXPRESSION
+                  | VALUES ','  EXPRESSION"""
+
 def p_expression_id(p):
     """EXPRESSION : ID"""
 
