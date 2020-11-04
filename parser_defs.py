@@ -42,14 +42,14 @@ def p_instruction_block(p):
     """INSTRUCTION_BLOCK : '{' INSTRUCTION '}'"""
 
 def p_if(p):
-    """IFINS : IF '(' EXPRESSION ')' INSTRUCTION
-             | IF '(' EXPRESSION ')' INSTRUCTION ELSEINS"""
+    """IFINS : IF '(' LOGICAL ')' INSTRUCTION
+             | IF '(' LOGICAL ')' INSTRUCTION ELSEINS"""
 
 def p_else(p):
     """ELSEINS : ELSE INSTRUCTION """
 
 def p_while(p):
-    """WHILEINS : WHILE '(' EXPRESSION ')' INSTRUCTION"""
+    """WHILEINS : WHILE '(' LOGICAL ')' INSTRUCTION"""
 
 def p_for(p):
     """FORINS : FOR ID '=' RANGE INSTRUCTION"""
