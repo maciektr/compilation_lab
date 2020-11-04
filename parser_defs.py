@@ -96,7 +96,7 @@ def p_numerical_num(p):
                  | REAL"""
 
 def p_range(p):
-    """RANGE : EXPRESSION ':' EXPRESSION"""
+    """RANGE : EXPRESSION RANGEOP EXPRESSION"""
 
 def p_values_def(p):
     """VALUES : EXPRESSION
