@@ -1,5 +1,5 @@
 precedence = (
-    ('left', 'LESSTHAN', 'GREATERTHAN', 'LESSOREQ', 'GREATEROREQ', 'NOTEQ'),
+    ('left', 'LESSTHAN', 'GREATERTHAN', 'LESSOREQ', 'GREATEROREQ', 'NOTEQ', 'EQUAL'),
     ('left', '+', '-'),
     ('left', '*', '/'),
     ('left', 'DOTADD', 'DOTSUB'),
@@ -130,5 +130,14 @@ def p_list(p):
 
 def p_list_extend_values(p):
     """LIST : LIST ',' EXPRESSION"""
+
+def p_logical(p):
+    """LOGICAL : EXPRESSION EQUAL EXPRESSION
+                | EXPRESSION LESSTHAN EXPRESSION
+                | EXPRESSION GREATERTHAN EXPRESSION
+                | EXPRESSION LESSOREQ EXPRESSION
+                | EXPRESSION GREATEROREQ EXPRESSION
+                | EXPRESSION NOTEQ EXPRESSION
+    """
 
 
