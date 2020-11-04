@@ -41,8 +41,6 @@ def p_instruction_expression(p):
 def p_print(p):
     """INSTRUCTION : PRINT VALUES"""
 
-def p_instruction_assign(p):
-    """INSTRUCTION : ID_INSTRUCTION '=' EXPRESSION"""
 
 def p_id_instruction(p):
     """ID_INSTRUCTION : ID
@@ -52,7 +50,8 @@ def p_instruction_assign(p):
     """INSTRUCTION : ID_INSTRUCTION PLUSASGN EXPRESSION
                    | ID_INSTRUCTION SUBASSIGN EXPRESSION
                    | ID_INSTRUCTION MULASSIGN EXPRESSION
-                   | ID_INSTRUCTION DIVASSIGN EXPRESSION"""
+                   | ID_INSTRUCTION DIVASSIGN EXPRESSION
+                   | ID_INSTRUCTION '=' EXPRESSION"""
 
 def p_instruction_return(p):
     """INSTRUCTION : RETURN
