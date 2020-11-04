@@ -1,52 +1,96 @@
 precedence = (
-   ("right", '='),
-   ("left", '+', '-'),
-   ("left", '*', '/'),
+    ('left', 'LESSTHAN', 'GREATERTHAN', 'LESSOREQ', 'GREATEROREQ', 'NOTEQ'),
+    ('left', '+', '-'),
+    ('left', '*', '/'),
+    ('left', 'DOTADD', 'DOTSUB'),
+    ('left', 'DOTMUL', 'DOTDIV'),
+    ('right', 'RANGEOP'),
+    ('nonassoc', 'ELSE'),
 )
 
-symtab = {}
+start = 'PROGRAM'
+
+# symtab = {}
 
 def p_error(p):
-    print("parsing error", p)
-
-def p_start(p):
-    """start : EXPRESSION
-             | start EXPRESSION"""
-    if   len(p)==2: print("p[1]=", p[1])
-    else:           print("p[2]=", p[2])
-
-def p_expression_number(p):
-    """EXPRESSION : INTNUM"""
-    p[0] = p[1]
-
-def p_expression_var(p):
-    """EXPRESSION : ID"""
-    val = symtab.get(p[1])
-    if val:
-        p[0] = val
+    if p:
+        print("Syntax error at line {0}: LexToken({1}, '{2}')".format(p.lineno, p.type, p.value))
     else:
-        p[0] = 0
-        print("%s not used\n" %p[1])
+        print("Unexpected end of input")
 
-def p_expression_assignment(p):
-    """EXPRESSION : ID '=' EXPRESSION"""
-    p[0] = p[3]
-    symtab[p[1]] = p[3]
+def p_program(p):
+    """PROGRAM : INSTRUCTIONS """
 
-def p_expression_sum(p):
+def p_instructions(p):
+    """INSTRUCTIONS : SINGLE_INSTRUCTION
+                    | INSTRUCTIONS SINGLE_INSTRUCTION"""
+
+def p_single_instruction(p):
+    """SINGLE_INSTRUCTION : NO_COLON_INSTRUCTION
+                          | INSTRUCTION ';' """
+
+def p_no_colon_instruction(p):
+    """NO_COLON_INSTRUCTION : IF
+                            | WHILE
+                            | FOR
+                            | INSTRUCTION_BLOCK"""
+
+def p_instruction_expression(p):
+    """INSTRUCTION : EXPRESSION"""
+
+def p_print(p):
+    """INSTRUCTION : PRINT VALUES"""
+
+def p_instruction_assign(p):
+    """INSTRUCTION : ID_INSTRUCTION '=' EXPRESSION"""
+
+def p_id_instruction(p):
+    """ID_INSTRUCTION : ID
+                      | ID_PART"""
+
+def p_instruction_assign(p):
+    """INSTRUCTION : ID_INSTRUCTION PLUSASGN EXPRESSION
+                   | ID_INSTRUCTION SUBASSIGN EXPRESSION
+                   | ID_INSTRUCTION MULASSIGN EXPRESSION
+                   | ID_INSTRUCTION DIVASSIGN EXPRESSION"""
+
+def p_instruction_return(p):
+    """INSTRUCTION : RETURN
+                   | RETURN EXPRESSION"""
+
+def p_break_continue(p):
+    """INSTRUCTION : BREAK
+                   | CONTINUE"""
+
+def p_expression_operation(p):
     """EXPRESSION : EXPRESSION '+' EXPRESSION
-                  | EXPRESSION '-' EXPRESSION"""
-    if   p[2]=='+': p[0] = p[1] + p[3]
-    elif p[2]=='-': p[0] = p[1] - p[3]
+                  | EXPRESSION '-' EXPRESSION
+                  | EXPRESSION '*' EXPRESSION
+                  | EXPRESSION '/' EXPRESSION
+                  | EXPRESSION DOTADD EXPRESSION
+                  | EXPRESSION DOTSUB EXPRESSION
+                  | EXPRESSION DOTMUL EXPRESSION
+                  | EXPRESSION DOTDIV EXPRESSION"""
 
-def p_expression_mul(p):
-    """EXPRESSION : EXPRESSION '*' EXPRESSION
-                  | EXPRESSION '/' EXPRESSION"""
-    if   p[2]=='*': p[0] = p[1] * p[3]
-    elif p[2]=='/': p[0] = p[1] / p[3]
+def p_expression_value(p):
+    """EXPRESSION : ID_PART
+                  | NUMERICAL
+                  | LIST
+                  | STRING"""
 
-def p_expression_group(p):
+def p_numerical_num(p):
+    """NUMERICAL : INTNUM
+                 | REAL"""
+
+def p_expression_id(p):
+    """EXPRESSION : ID"""
+
+def p_expression_parenthese(p):
     """EXPRESSION : '(' EXPRESSION ')'"""
-    p[0] = p[2]
 
+def p_expression_zeros(p):
+    """EXPRESSION : ZEROS '(' INTNUM ')'"""
+
+# def p_expression_(p):
+    # """EXPRESSION : """
 
