@@ -5,7 +5,7 @@ precedence = (
     ('left', 'DOTADD', 'DOTSUB'),
     ('left', 'DOTMUL', 'DOTDIV'),
     ('right', 'RANGEOP'),
-    ('nonassoc', 'IFINS'),
+    ('nonassoc', 'IF'),
     ('nonassoc', 'ELSE'),
 )
 
@@ -29,9 +29,10 @@ def p_single_instruction(p):
                           | INSTRUCTION ';' """
 
 def p_no_colon_instruction(p):
-    """NO_COLON_INSTRUCTION : IF
-                            | WHILE
-                            | FOR
+    """NO_COLON_INSTRUCTION : IFINS
+                            | ELSEINS
+                            | WHILEINS
+                            | FORINS
                             | INSTRUCTION_BLOCK"""
 
 def p_instruction_expression(p):
@@ -96,7 +97,7 @@ def p_numerical_num(p):
                  | REAL"""
 
 def p_range(p):
-    """RANGE : EXPRESSION ':' EXPRESSION"""
+    """RANGE : EXPRESSION RANGEOP EXPRESSION"""
 
 def p_values_def(p):
     """VALUES : EXPRESSION
@@ -122,8 +123,8 @@ def p_expression_eye(p):
 def p_expression_transpose(p):
     """EXPRESSION : EXPRESSION "\'" """
 
-def p_vector(p):
-    """VALUES : ID '[' VALUES ']'"""
+def p_id_part(p):
+    """ID_PART : ID '[' VALUES ']'"""
 
 def p_list(p):
     """ LIST : '[' VALUES ']'"""
