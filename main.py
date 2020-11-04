@@ -1,24 +1,77 @@
+import os
 import sys
-import ply.lex as lex
-from scanner import Scanner
-from parser import Parser
+import getopt
+
+from parser.parser import Parser
+from scanner.scanner import Scanner
+
+OPTIONS = ['path=', 'lexer', 'clear']
 
 
-if __name__ == '__main__':
+def exit_fail(message: str=None):
+    if message:
+        print(message)
+    sys.exit(1)
+
+
+def exit_ok(message: str=None):
+    if message:
+        print(message)
+    sys.exit(0)
+
+
+def run_lexer(scanner: Scanner, text: str):
+    scanner(text)
+    for tok in scanner.token():
+        print("(%d, %d): %s(%s)" % tok)
+        print(tok)
+
+
+def run_parser(parser: Parser, text: str):
+    parser.parse(text)
+
+
+def clear():
+    def rm(path):
+        try:
+            os.remove(path)
+        except OSError:
+            pass
+    rm('parser/parser.out')
+    rm('parser/parsetab.py')
+
+
+def main():
     try:
-        filename = sys.argv[1] if len(sys.argv) > 1 else "examples/example1.m"
+        opts, _args = getopt.getopt(sys.argv[1:], '', OPTIONS)
+        options = {k : v for k,v in opts}
+    except getopt.GetoptError as err:
+        exit_fail(err)
+
+    try:
+        filename = 'examples/example1.m'
+        if '--path' in options:
+            filename = options['--path']
+
         with open(filename, "r") as file:
             text = file.read()
     except IOError:
-        print(f"Cannot open {filename} file")
-        sys.exit(0)
+        exit_ok(f"Cannot open {filename} file")
+
+    if '--clear' in options:
+        clear()
+        exit_ok()
 
     lexer = Scanner()
-    # lexer(text)
 
-    # for tok in lexer.token():
-        # print("(%d, %d): %s(%s)" % tok)
-        # print(tok)
+    if '--lexer' in options:
+        run_lexer(lexer, text)
+        exit_ok()
 
-    parser = Parser(lexer.get_lexer())
-    parser.parse(text)
+    clear()
+    parser = Parser(lexer)
+    run_parser(parser, text)
+
+
+if __name__ == '__main__':
+    main()
