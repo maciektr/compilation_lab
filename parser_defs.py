@@ -5,12 +5,11 @@ precedence = (
     ('left', 'DOTADD', 'DOTSUB'),
     ('left', 'DOTMUL', 'DOTDIV'),
     ('right', 'RANGEOP'),
+    ('nonassoc', 'IFINS'),
     ('nonassoc', 'ELSE'),
 )
 
 start = 'PROGRAM'
-
-# symtab = {}
 
 def p_error(p):
     if p:
@@ -38,9 +37,24 @@ def p_no_colon_instruction(p):
 def p_instruction_expression(p):
     """INSTRUCTION : EXPRESSION"""
 
+def p_instruction_block(p):
+    """INSTRUCTION_BLOCK : '{' INSTRUCTION '}'"""
+
+def p_if(p):
+    """IFINS : IF '(' EXPRESSION ')' INSTRUCTION
+             | IF '(' EXPRESSION ')' INSTRUCTION ELSEINS"""
+
+def p_else(p):
+    """ELSEINS : ELSE INSTRUCTION """
+
+def p_while(p):
+    """WHILEINS : WHILE '(' EXPRESSION ')' INSTRUCTION"""
+
+def p_for(p):
+    """FORINS : FOR ID '=' RANGE INSTRUCTION"""
+
 def p_print(p):
     """INSTRUCTION : PRINT VALUES"""
-
 
 def p_id_instruction(p):
     """ID_INSTRUCTION : ID
@@ -81,9 +95,14 @@ def p_numerical_num(p):
     """NUMERICAL : INTNUM
                  | REAL"""
 
-def p_num_list_extend(p):
+def p_range(p):
+    """RANGE : EXPRESSION ':' EXPRESSION"""
+
+def p_values_def(p):
     """VALUES : EXPRESSION
-                  | VALUES ','  EXPRESSION"""
+              | RANGE
+              | VALUES ',' EXPRESSION
+              | VALUES ',' RANGE"""
 
 def p_expression_id(p):
     """EXPRESSION : ID"""
@@ -94,6 +113,22 @@ def p_expression_parenthese(p):
 def p_expression_zeros(p):
     """EXPRESSION : ZEROS '(' INTNUM ')'"""
 
-# def p_expression_(p):
-    # """EXPRESSION : """
+def p_expression_ones(p):
+    """EXPRESSION : ONES '(' INTNUM ')'"""
+
+def p_expression_eye(p):
+    """EXPRESSION : EYE '(' INTNUM ')'"""
+
+def p_expression_transpose(p):
+    """EXPRESSION : EXPRESSION "\'" """
+
+def p_vector(p):
+    """VALUES : ID '[' VALUES ']'"""
+
+def p_list(p):
+    """ LIST : '[' VALUES ']'"""
+
+def p_list_extend_values(p):
+    """LIST : LIST ',' EXPRESSION"""
+
 
