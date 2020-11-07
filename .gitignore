@@ -1,5 +1,5 @@
 # Own definitions
-parsetab.py
+*.zip
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,vscode,pycharm+all,intellij+all,jetbrains+all,linux,osx,windows,c++,jupyternotebooks,pydev,venv,virtualenv
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,vscode,pycharm+all,intellij+all,jetbrains+all,linux,osx,windows,c++,jupyternotebooks,pydev,venv,virtualenv
@@ -88,7 +88,7 @@ cmake-build-*/
 *.iws
 
 # IntelliJ
-out/
+# out/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
