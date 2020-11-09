@@ -9,6 +9,9 @@ precedence = (
     ('nonassoc', 'ELSE'),
 )
 
+# invalid-name unused-argument
+# pylint: disable=C0103 W0613
+
 start = 'PROGRAM'
 
 def p_error(p):
@@ -140,5 +143,3 @@ def p_logical(p):
                 | EXPRESSION GREATEROREQ EXPRESSION
                 | EXPRESSION NOTEQ EXPRESSION
     """
-
-

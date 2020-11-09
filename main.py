@@ -1,24 +1,114 @@
+import os
 import sys
-import ply.lex as lex
-from scanner import Scanner
+import getopt
+
 from parser import Parser
+from scanner import Scanner
+
+OPTIONS = ['path=', 'lexer', 'clear', 'zip', 'use_cache']
+PARSER_AUTO_FILES = ['parser/parser.out', 'parser/parsetab.py']
+OUT_FOLDER = 'out'
 
 
-if __name__ == '__main__':
+def exit_fail(message: str=None):
+    if message:
+        print(message)
+    sys.exit(1)
+
+
+def exit_ok(message: str=None):
+    if message:
+        print(message)
+    sys.exit(0)
+
+
+def run_lexer(scanner: Scanner, text: str):
+    scanner(text)
+    for tok in scanner.token():
+        print("(%d, %d): %s(%s)" % tok)
+        print(tok)
+
+
+def run_parser(parser: Parser, text: str):
+    parser.parse(text)
+
+
+def rm_file(path):
     try:
-        filename = sys.argv[1] if len(sys.argv) > 1 else "examples/example1.m"
+        os.remove(path)
+    except OSError:
+        pass
+
+
+def zip_files(out):
+    file_name = f'{OUT_FOLDER}/{out}.zip'
+    rm_file(file_name)
+    os.system(f"zip -r {file_name} ./ -x '*venv*' '*.git*' '*__pycache__*' '{OUT_FOLDER}/*'")
+
+
+def clear():
+    for file in PARSER_AUTO_FILES:
+        rm_file(file)
+    rm_file(f'{OUT_FOLDER}/parser.out')
+    rm_file(f'{OUT_FOLDER}/parsetab.py')
+
+
+def mv_file(source, destination):
+    try:
+        os.rename(source, destination)
+    except OSError:
+        pass
+
+
+def move_auto_files(mv_reversed=False):
+    for file in PARSER_AUTO_FILES:
+        _, name = file.split('/', 1)
+        if mv_reversed:
+            mv_file(f'{OUT_FOLDER}/{name}', file)
+        else:
+            mv_file(file, f'{OUT_FOLDER}/{name}')
+
+
+def main():
+    try:
+        options, _args = getopt.getopt(sys.argv[1:], '', OPTIONS)
+        # options = {k : v for k,v in opts}
+    except getopt.GetoptError as err:
+        exit_fail(err)
+
+    try:
+        filename = 'examples/example1.m'
+        if '--path' in options:
+            filename = options['--path']
+
         with open(filename, "r") as file:
             text = file.read()
     except IOError:
-        print(f"Cannot open {filename} file")
-        sys.exit(0)
+        exit_ok(f"Cannot open {filename} file")
+
+    if '--clear' in options:
+        clear()
+        exit_ok()
 
     lexer = Scanner()
-    # lexer(text)
 
-    # for tok in lexer.token():
-        # print("(%d, %d): %s(%s)" % tok)
-        # print(tok)
+    if '--lexer' in options:
+        run_lexer(lexer, text)
+        exit_ok()
 
-    parser = Parser(lexer.get_lexer())
-    parser.parse(text)
+    if '--use_cache' not in options:
+        clear()
+
+    if '--zip' in options:
+        out = options['--zip'] if options['--zip'] else 'slawecki_tratnowiecki'
+        zip_files(out)
+
+    if '--use_cache' in options:
+        move_auto_files(mv_reversed=True)
+    parser = Parser(lexer)
+    run_parser(parser, text)
+    move_auto_files()
+
+
+if __name__ == '__main__':
+    main()

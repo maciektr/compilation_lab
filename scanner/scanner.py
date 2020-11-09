@@ -1,8 +1,8 @@
-import ply
-import ply.lex as lex;
-from typing import Callable
+import ply.lex as lex
 
-from scanner_defs import *
+# wildcard-import unused-wildcard-import
+from scanner.scanner_defs import * # pylint: disable=W0401 W0614
+
 
 class Scanner:
     def __init__(self):
@@ -17,8 +17,8 @@ class Scanner:
         return self.lexer
 
     def find_column(self, token):
-        input = self.last_text
-        line_start = input.rfind('\n', 0, token.lexpos) + 1
+        text = self.last_text
+        line_start = text.rfind('\n', 0, token.lexpos) + 1
         return (token.lexpos - line_start) + 1
 
     def token(self):
