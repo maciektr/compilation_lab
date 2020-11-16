@@ -33,7 +33,6 @@ def p_single_instruction(p):
 
 def p_no_colon_instruction(p):
     """NO_COLON_INSTRUCTION : IFINS
-                            | ELSEINS
                             | WHILEINS
                             | FORINS
                             | INSTRUCTION_BLOCK"""
@@ -42,20 +41,20 @@ def p_instruction_expression(p):
     """INSTRUCTION : EXPRESSION"""
 
 def p_instruction_block(p):
-    """INSTRUCTION_BLOCK : '{' INSTRUCTION '}'"""
+    """INSTRUCTION_BLOCK : '{' INSTRUCTIONS '}'"""
 
 def p_if(p):
-    """IFINS : IF '(' LOGICAL ')' INSTRUCTION
-             | IF '(' LOGICAL ')' INSTRUCTION ELSEINS"""
+    """IFINS : IF '(' LOGICAL ')' SINGLE_INSTRUCTION
+             | IF '(' LOGICAL ')' SINGLE_INSTRUCTION ELSEINS"""
 
 def p_else(p):
-    """ELSEINS : ELSE INSTRUCTION """
+    """ELSEINS : ELSE SINGLE_INSTRUCTION """
 
 def p_while(p):
-    """WHILEINS : WHILE '(' LOGICAL ')' INSTRUCTION"""
+    """WHILEINS : WHILE '(' LOGICAL ')' SINGLE_INSTRUCTION"""
 
 def p_for(p):
-    """FORINS : FOR ID '=' RANGE INSTRUCTION"""
+    """FORINS : FOR ID '=' RANGE SINGLE_INSTRUCTION"""
 
 def p_print(p):
     """INSTRUCTION : PRINT VALUES"""
@@ -87,7 +86,8 @@ def p_expression_operation(p):
                   | EXPRESSION DOTADD EXPRESSION
                   | EXPRESSION DOTSUB EXPRESSION
                   | EXPRESSION DOTMUL EXPRESSION
-                  | EXPRESSION DOTDIV EXPRESSION"""
+                  | EXPRESSION DOTDIV EXPRESSION
+                  | '-' EXPRESSION"""
 
 def p_expression_value(p):
     """EXPRESSION : ID_PART

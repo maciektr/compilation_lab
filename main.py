@@ -71,8 +71,8 @@ def move_auto_files(mv_reversed=False):
 
 def main():
     try:
-        options, _args = getopt.getopt(sys.argv[1:], '', OPTIONS)
-        options = {k : v for k,v in options}
+        opts, _args = getopt.getopt(sys.argv[1:], '', OPTIONS)
+        options = {k : v for k,v in opts} # pylint: disable=R1721
     except getopt.GetoptError as err:
         exit_fail(err)
 
