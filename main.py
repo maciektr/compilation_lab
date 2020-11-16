@@ -72,7 +72,7 @@ def move_auto_files(mv_reversed=False):
 def main():
     try:
         options, _args = getopt.getopt(sys.argv[1:], '', OPTIONS)
-        # options = {k : v for k,v in opts}
+        options = {k : v for k,v in options}
     except getopt.GetoptError as err:
         exit_fail(err)
 
@@ -81,6 +81,7 @@ def main():
         if '--path' in options:
             filename = options['--path']
 
+        print(f'Opening file: {filename}')
         with open(filename, "r") as file:
             text = file.read()
     except IOError:
