@@ -35,6 +35,9 @@ tokens = (
     *reserved.values()
 )
 
+# invalid-name
+# pylint: disable=C0103
+
 t_DOTADD = r'\.\+'
 t_DOTSUB = r'\.-'
 

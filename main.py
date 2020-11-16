@@ -2,10 +2,12 @@ import os
 import sys
 import getopt
 
-from parser.parser import Parser
-from scanner.scanner import Scanner
+from parser import Parser
+from scanner import Scanner
 
-OPTIONS = ['path=', 'lexer', 'clear']
+OPTIONS = ['path=', 'lexer', 'clear', 'zip', 'use_cache']
+PARSER_AUTO_FILES = ['parser/parser.out', 'parser/parsetab.py']
+OUT_FOLDER = 'out'
 
 
 def exit_fail(message: str=None):
@@ -31,20 +33,46 @@ def run_parser(parser: Parser, text: str):
     parser.parse(text)
 
 
+def rm_file(path):
+    try:
+        os.remove(path)
+    except OSError:
+        pass
+
+
+def zip_files(out):
+    file_name = f'{OUT_FOLDER}/{out}.zip'
+    rm_file(file_name)
+    os.system(f"zip -r {file_name} ./ -x '*venv*' '*.git*' '*__pycache__*' '{OUT_FOLDER}/*'")
+
+
 def clear():
-    def rm(path):
-        try:
-            os.remove(path)
-        except OSError:
-            pass
-    rm('parser/parser.out')
-    rm('parser/parsetab.py')
+    for file in PARSER_AUTO_FILES:
+        rm_file(file)
+    rm_file(f'{OUT_FOLDER}/parser.out')
+    rm_file(f'{OUT_FOLDER}/parsetab.py')
+
+
+def mv_file(source, destination):
+    try:
+        os.rename(source, destination)
+    except OSError:
+        pass
+
+
+def move_auto_files(mv_reversed=False):
+    for file in PARSER_AUTO_FILES:
+        _, name = file.split('/', 1)
+        if mv_reversed:
+            mv_file(f'{OUT_FOLDER}/{name}', file)
+        else:
+            mv_file(file, f'{OUT_FOLDER}/{name}')
 
 
 def main():
     try:
-        opts, _args = getopt.getopt(sys.argv[1:], '', OPTIONS)
-        options = {k : v for k,v in opts}
+        options, _args = getopt.getopt(sys.argv[1:], '', OPTIONS)
+        # options = {k : v for k,v in opts}
     except getopt.GetoptError as err:
         exit_fail(err)
 
@@ -68,9 +96,18 @@ def main():
         run_lexer(lexer, text)
         exit_ok()
 
-    clear()
+    if '--use_cache' not in options:
+        clear()
+
+    if '--zip' in options:
+        out = options['--zip'] if options['--zip'] else 'slawecki_tratnowiecki'
+        zip_files(out)
+
+    if '--use_cache' in options:
+        move_auto_files(mv_reversed=True)
     parser = Parser(lexer)
     run_parser(parser, text)
+    move_auto_files()
 
 
 if __name__ == '__main__':
