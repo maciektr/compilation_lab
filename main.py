@@ -29,10 +29,6 @@ def run_lexer(scanner: Scanner, text: str):
         print(tok)
 
 
-def run_parser(parser: Parser, text: str):
-    parser.parse(text)
-
-
 def rm_file(path):
     try:
         os.remove(path)
@@ -107,8 +103,9 @@ def main():
     if '--use_cache' in options:
         move_auto_files(mv_reversed=True)
     parser = Parser(lexer)
-    run_parser(parser, text)
+    ast = parser.parse(text)
     move_auto_files()
+    ast.print_tree()
 
 
 if __name__ == '__main__':
