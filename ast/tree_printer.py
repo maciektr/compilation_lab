@@ -140,8 +140,8 @@ class TreePrinter:
 
     @add_to_class(ast.List)
     def print_tree(self, indent=0):
-        # for v in self.values:
-        #     print_ind(v, indent)
+        #for v in range(len(self.values)):
+        #    print_ind(self.values[v], indent)
         print_ind(self.values, indent)
 
     @add_to_class(ast.Logical)
