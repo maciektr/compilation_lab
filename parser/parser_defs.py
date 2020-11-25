@@ -205,10 +205,11 @@ def p_expression_transpose(p):
     p[0] = ast.Transpose(p[1])
 
 def p_id_part(p):
-    """ID_PART : ID '[' VALUES ']'"""
+    """ID_PART : ID '[' INTNUM ',' INTNUM ']'"""
     p[0] = ast.Partition(
         variable=p[1],
-        value=p[3],
+        value_start=p[3],
+        value_end=p[5],
     )
 
 def p_list(p):

@@ -73,7 +73,7 @@ def main():
         exit_fail(err)
 
     try:
-        filename = 'examples/example1.m'
+        filename = 'examples/example4.m'
         if '--path' in options:
             filename = options['--path']
 

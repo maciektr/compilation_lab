@@ -24,11 +24,11 @@ class TreePrinter:
         for instruction in self.instructions:
             instruction.print_tree(indent)
 
-    @add_to_class(ast.Error)
+    @add_to_class(ast.Error) 
     def print_tree(self, indent=0):
         pass
 
-    @add_to_class(ast.InstructionBlock)
+    @add_to_class(ast.InstructionBlock) 
     def print_tree(self, indent=0):
         self.instructions.print_tree(indent)
 
@@ -128,9 +128,11 @@ class TreePrinter:
 
     @add_to_class(ast.Partition)
     def print_tree(self, indent=0):
-        print_ind(self.name)
-        print_ind(self.start)
-        print_ind(self.end)
+        print_ind('PARTITION', indent)
+        print_ind(self.variable, indent + 1)
+        print_ind(self.value_start, indent + 1)
+        print_ind(self.value_end, indent + 1)
+        
 
     @add_to_class(ast.Value)
     def print_tree(self, indent=0):
@@ -138,12 +140,16 @@ class TreePrinter:
 
     @add_to_class(ast.List)
     def print_tree(self, indent=0):
-        pass
+        #list_str = "".join(map(lambda x: x.printTree(indent), self.values))
+        #return list_str
+        print(self.values)
 
     @add_to_class(ast.Logical)
     def print_tree(self, indent=0):
-        pass
+        print_ind(self.operator, indent)
+        print_ind(self.left, indent + 1)
+        print_ind(self.right, indent + 1)
 
     @add_to_class(ast.Variable)
     def print_tree(self, indent=0):
-        pass
+        print_ind(self.name, indent)
