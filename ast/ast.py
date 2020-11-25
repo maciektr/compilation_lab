@@ -109,6 +109,9 @@ class List(Node):   #
     def __init__(self, values):
         self.values = values if values else []
 
+    def __iter__(self):
+        pass
+
 @dataclass
 class Logical(Node):    #
     left: Node
