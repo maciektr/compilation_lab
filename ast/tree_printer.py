@@ -140,9 +140,9 @@ class TreePrinter:
 
     @add_to_class(ast.List)
     def print_tree(self, indent=0):
-        #list_str = "".join(map(lambda x: x.printTree(indent), self.values))
-        #return list_str
-        print(self.values)
+        for v in self.values:
+            print_ind(v, indent)
+        #print(self.values)
 
     @add_to_class(ast.Logical)
     def print_tree(self, indent=0):
