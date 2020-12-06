@@ -215,15 +215,16 @@ def p_id_part(p):
 def p_list(p):
     """ LIST : '[' VALUES ']'"""
     p[0] = ast.List(
-        values=p[2],
+        values=[p[2]],
     )
-
 
 def p_list_extend_values(p):
-    """LIST : LIST ',' EXPRESSION"""
-    p[0] = ast.List(
-        values=[p[1],p[3]],
-    )
+    """SUPERLIST : LIST ',' LIST"""
+    p[0] = ast.List([p[1],p[3]])
+
+def p_superlist_extension(p):
+    """SUPERLIST : SUPERLIST ',' LIST"""
+    p[0] = p[1].append(p[3])
 
 def p_logical(p):
     """LOGICAL : EXPRESSION EQUAL EXPRESSION

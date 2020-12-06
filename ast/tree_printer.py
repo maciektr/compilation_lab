@@ -1,4 +1,6 @@
 import ast.ast as ast
+from typing import List
+
 
 def add_to_class(cls):
     def decorator(func):
@@ -6,9 +8,15 @@ def add_to_class(cls):
         return func
     return decorator
 
+
 def print_ind(value, indent=0):
     if isinstance(value, ast.Node):
         value.print_tree(indent)
+        return
+
+    if isinstance(value, List):
+        for v in value:
+            print_ind(v, indent)
         return
 
     print('|  ' * indent, value, sep='')
@@ -24,11 +32,11 @@ class TreePrinter:
         for instruction in self.instructions:
             instruction.print_tree(indent)
 
-    @add_to_class(ast.Error) 
+    @add_to_class(ast.Error)
     def print_tree(self, indent=0):
         pass
 
-    @add_to_class(ast.InstructionBlock) 
+    @add_to_class(ast.InstructionBlock)
     def print_tree(self, indent=0):
         self.instructions.print_tree(indent)
 
@@ -132,7 +140,6 @@ class TreePrinter:
         print_ind(self.variable, indent + 1)
         print_ind(self.value_start, indent + 1)
         print_ind(self.value_end, indent + 1)
-        
 
     @add_to_class(ast.Value)
     def print_tree(self, indent=0):
@@ -140,9 +147,8 @@ class TreePrinter:
 
     @add_to_class(ast.List)
     def print_tree(self, indent=0):
-        #for v in range(len(self.values)):
-        #    print_ind(self.values[v], indent)
-        print_ind(self.values, indent)
+        print_ind('LIST', indent)
+        print_ind(self.values, indent+1)
 
     @add_to_class(ast.Logical)
     def print_tree(self, indent=0):
