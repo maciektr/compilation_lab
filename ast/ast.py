@@ -142,7 +142,6 @@ class List(Node):
         return f'<ast.List at {id(self)}: {self.values}>'
 
     def append(self, value):
-        print('SELF', self.values)
         self.values.append(List(value))
         self.__reduce()
 
