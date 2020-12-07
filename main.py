@@ -29,10 +29,6 @@ def run_lexer(scanner: Scanner, text: str):
         print(tok)
 
 
-def run_parser(parser: Parser, text: str):
-    parser.parse(text)
-
-
 def rm_file(path):
     try:
         os.remove(path)
@@ -71,16 +67,17 @@ def move_auto_files(mv_reversed=False):
 
 def main():
     try:
-        options, _args = getopt.getopt(sys.argv[1:], '', OPTIONS)
-        # options = {k : v for k,v in opts}
+        opts, _args = getopt.getopt(sys.argv[1:], '', OPTIONS)
+        options = {k : v for k,v in opts} # pylint: disable=R1721
     except getopt.GetoptError as err:
         exit_fail(err)
 
     try:
-        filename = 'examples/example1.m'
+        filename = 'examples/example4.m'
         if '--path' in options:
             filename = options['--path']
 
+        print(f'Opening file: {filename}')
         with open(filename, "r") as file:
             text = file.read()
     except IOError:
@@ -106,8 +103,9 @@ def main():
     if '--use_cache' in options:
         move_auto_files(mv_reversed=True)
     parser = Parser(lexer)
-    run_parser(parser, text)
+    ast = parser.parse(text)
     move_auto_files()
+    ast.print_tree()
 
 
 if __name__ == '__main__':

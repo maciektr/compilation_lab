@@ -62,7 +62,7 @@ def t_ID(t):
     return t
 
 def t_REAL(t):
-    r'([0-9]*)?\.([0-9]+([eE][-+]?[0-9]+)?)?'
+    r'(?:\d+\.\d*|\d*\.\d+)'
     if t.value.endswith('.'):
         t.value = t.value[:-1]
     t.value = float(t.value if t.value else 0)
