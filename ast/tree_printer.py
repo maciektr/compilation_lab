@@ -1,5 +1,4 @@
 import ast.ast as ast
-from typing import List
 
 
 def add_to_class(cls):
@@ -14,12 +13,18 @@ def print_ind(value, indent=0):
         value.print_tree(indent)
         return
 
-    if isinstance(value, List):
-        for v in value:
-            print_ind(v, indent)
+    if isinstance(value, list):
+        for item in value:
+            print_ind(item, indent)
         return
 
     print('|  ' * indent, value, sep='')
+
+
+# no-member function-redefined
+# pylint: disable=E1101 E0102
+# too-few-public-methods no-self-use
+# pylint: disable=R0903 R0201
 
 
 class TreePrinter:

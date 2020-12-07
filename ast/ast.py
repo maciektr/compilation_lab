@@ -4,13 +4,16 @@ from typing import List as ListType
 
 def flatten(values):
     def __flatten(values):
-        return [item for sublist in [x for x in values if isinstance(x,ListType)] for item in sublist]
+        return [item for sublist in [
+            x for x in values if isinstance(x, list)
+            ] for item in sublist]
 
-    if not isinstance(values, ListType):
+    if not isinstance(values, list):
         return values
 
-    if any(map(lambda x: isinstance(x, ListType), values)):
-        values = [item for item in values if not isinstance(item, ListType)] + list(reversed(__flatten(values)))
+    if any(map(lambda x: isinstance(x, list), values)):
+        values = [item for item in values if not isinstance(item, list)] \
+        + list(reversed(__flatten(values)))
 
     return list(values)
 
@@ -25,7 +28,10 @@ def parse_list_values(values):
     return flatten(values)
 
 
-class Node(object):
+# too-few-public-methods
+# pylint: disable=R0903
+
+class Node:
     @property
     def name(self):
         return self.__class__.__name__
@@ -132,7 +138,7 @@ class List(Node):
     def __reduce(self):
         while isinstance(self.values, List):
             self.values = self.values.values
-        assert isinstance(self.values, ListType)
+        assert isinstance(self.values, list)
 
     def __init__(self, values):
         self.values = values if values else []
