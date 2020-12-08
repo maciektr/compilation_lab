@@ -95,10 +95,13 @@ class TypeChecker(NodeVisitor):
         return None
 
     def visit_Variable(self, node):
-        pass
+        return 'VARIABLE'
 
     def visit_Logical(self, node):
-        pass
+        if not self(node.left) == self(node.right):
+            print("Logical expression on different types")
+
+        return 'BOOLEAN'
 
     def visit_List(self, node):
         pass
@@ -107,6 +110,13 @@ class TypeChecker(NodeVisitor):
         pass
 
     def visit_Partition(self, node):
+        n_type = self(node.variable)
+        if n_type != 'VARIABLE':
+            print(f'Expected variable, got {n_type}')
+            
+        if not self(node.variable) in symbol_table:
+            print(f'Unknown variable {node.variable}')
+        
         pass
 
     def visit_Eye(self, node):
