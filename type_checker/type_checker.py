@@ -1,10 +1,10 @@
 import ast
-from type_checker.symbol_table import SymbolTable, Scope
+from type_checker.symbol_table import Scope
 
 
 class NodeVisitor(object):
     def __call__(self, node):
-        method = 'visit_' + node.__class__.__name__
+        method = f'visit_{node.name}'
         visitor = getattr(self, method, self.generic_visit)
         return visitor(node)
 
@@ -13,8 +13,8 @@ class NodeVisitor(object):
         Called if no explicit visitor function exists for a node.
         """
         if isinstance(node, list):
-            for elem in node:
-                self(elem)
+            for element in node:
+                self(element)
             return
 
         for child in node.children:
