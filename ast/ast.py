@@ -36,6 +36,11 @@ class Node:
     def name(self):
         return self.__class__.__name__
 
+    @property
+    def children(self):
+        return list(vars(self).values())
+
+
 class Instructions(Node):
     def __init__(self, instructions):
         self.instructions = instructions

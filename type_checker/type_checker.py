@@ -3,30 +3,22 @@ from type_checker.symbol_table import SymbolTable, Scope
 
 
 class NodeVisitor(object):
-
-    def visit(self, node):
+    def __call__(self, node):
         method = 'visit_' + node.__class__.__name__
         visitor = getattr(self, method, self.generic_visit)
         return visitor(node)
 
-    def generic_visit(self, node):        # Called if no explicit visitor function exists for a node.
+    def generic_visit(self, node):
+        """
+        Called if no explicit visitor function exists for a node.
+        """
         if isinstance(node, list):
             for elem in node:
-                self.visit(elem)
-        else:
-            for child in node.children:
-                if isinstance(child, list):
-                    for item in child:
-                        if isinstance(item, ast.Node):
-                            self.visit(item)
-                elif isinstance(child, ast.Node):
-                    self.visit(child)
+                self(elem)
+            return
 
-    # simpler version of generic_visit, not so general
-    #def generic_visit(self, node):
-    #    for child in node.children:
-    #        self.visit(child)
-
+        for child in node.children:
+            self(child)
 
 
 class TypeChecker(NodeVisitor):

@@ -4,8 +4,9 @@ import getopt
 
 from parser import Parser
 from scanner import Scanner
+from type_checker import TypeChecker
 
-OPTIONS = ['path=', 'lexer', 'clear', 'zip', 'use_cache']
+OPTIONS = ['path=', 'lexer', 'clear', 'zip', 'use_cache', 'print_ast']
 PARSER_AUTO_FILES = ['parser/parser.out', 'parser/parsetab.py']
 OUT_FOLDER = 'out'
 
@@ -105,7 +106,12 @@ def main():
     parser = Parser(lexer)
     ast = parser.parse(text)
     move_auto_files()
-    ast.print_tree()
+
+    if '--print_ast' in options:
+        ast.print_tree()
+
+    type_checker = TypeChecker()
+    type_checker(ast)
 
 
 if __name__ == '__main__':
