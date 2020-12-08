@@ -13,6 +13,9 @@ class Scope:
 
         return self.parent[name] if self.parent else None
 
+    def __contains__(self, name):
+        return name in self.dict
+
 
 class SymbolTable:
     def __init__(self, name, parent=None):
@@ -20,6 +23,9 @@ class SymbolTable:
         Parent scope and symbol table name
         """
         self.current_scope = Scope(name, parent)
+
+    def __contains__(self, name):
+        return name in self.current_scope
 
     def __setitem__(self, name, symbol):
         """
