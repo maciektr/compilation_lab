@@ -4,8 +4,10 @@ from type_checker.symbol_table import SymbolTable
 
 class NodeVisitor:
     def __call__(self, node):
-        method = f'visit_{node.name}'
-        visitor = getattr(self, method, self.generic_visit)
+        visitor = self.generic_visit
+        if hasattr(node, 'name'):
+            method = f'visit_{node.name}'
+            visitor = getattr(self, method, self.generic_visit)
         return visitor(node)
 
     def generic_visit(self, node):
@@ -23,7 +25,7 @@ class NodeVisitor:
 
 class TypeChecker(NodeVisitor):
     def __init__(self):
-        self.symbol_table = SymbolTable()
+        self.symbol_table = SymbolTable('__type_checker__')
         self.loop_count = 0
 
     def visit_IntNum(self, node):
