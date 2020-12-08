@@ -1,4 +1,3 @@
-import ast
 from type_checker.symbol_table import SymbolTable
 
 
@@ -25,6 +24,8 @@ class NodeVisitor:
         for child in node.children:
             self(child)
 
+# invalid-name no-self-use too-many-public-methods
+# pylint: disable=C0103 R0201 R0904
 
 class TypeChecker(NodeVisitor):
     def __init__(self):
@@ -62,25 +63,22 @@ class TypeChecker(NodeVisitor):
 
         self.symbol_table.push_scope()
         self(node.instructions)
-        self.symbol.pop_scope()
+        self.symbol_table.pop_scope()
 
         self.loop_count -= 1
-        return None
 
     def visit_If(self, node):
         condition = self(node.condition)
         if condition != 'BOOLEAN':
             print(f'Expected condition resolving to boolean value, got {condition}')
 
-        self.symbol.push_scope()
+        self.symbol_table.push_scope()
         self(node.instructions)
-        self.symbol.pop_scope()
+        self.symbol_table.pop_scope()
 
-        self.symbol.push_scope()
+        self.symbol_table.push_scope()
         self(node.else_instruction)
-        self.symbol.pop_scope()
-
-        return None
+        self.symbol_table.pop_scope()
 
     def visit_For(self, node):
         self.loop_count += 1
@@ -88,17 +86,13 @@ class TypeChecker(NodeVisitor):
         if n_type != 'RANGE':
             print(f'Expected range, got {n_type}')
 
-        self.symbol.push_scope()
+        self.symbol_table.push_scope()
         self.symbol_table[node.iterator] = 'INT'
 
         self(node.instructions)
 
-        self.symbol.pop_scope()
+        self.symbol_table.pop_scope()
         self.loop_count -= 1
-        return None
-
-    def visit_Variable(self, node):
-        pass
 
     def visit_Logical(self, node):
         pass
@@ -141,4 +135,3 @@ class TypeChecker(NodeVisitor):
 
     def visit_Print(self, node):
         self(node.value)
-        return None
