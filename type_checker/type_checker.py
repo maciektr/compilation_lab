@@ -1,5 +1,5 @@
 import ast
-from SymbolTable import *
+from type_checker.symbol_table import SymbolTable, Scope
 
 
 class NodeVisitor(object):
@@ -8,7 +8,6 @@ class NodeVisitor(object):
         method = 'visit_' + node.__class__.__name__
         visitor = getattr(self, method, self.generic_visit)
         return visitor(node)
-
 
     def generic_visit(self, node):        # Called if no explicit visitor function exists for a node.
         if isinstance(node, list):
@@ -31,7 +30,6 @@ class NodeVisitor(object):
 
 
 class TypeChecker(NodeVisitor):
-
     def __init__(self):
         self.current_scope = Scope()
         self.loop_count = 0
@@ -70,7 +68,7 @@ class TypeChecker(NodeVisitor):
 
         self.loop_count -= 1
         return None
-    
+
     def visit_If(self, node):
         condt = self.visit(node.condition)
         if condt != 'BOOLEAN':
@@ -146,10 +144,3 @@ class TypeChecker(NodeVisitor):
     def visit_Print(self, node):
         self.visit(node.value)
         return None
-
-
-        
-    
-    
-
-
