@@ -1,8 +1,8 @@
 import ast
-from type_checker.symbol_table import Scope
+from type_checker.symbol_table import SymbolTable
 
 
-class NodeVisitor(object):
+class NodeVisitor:
     def __call__(self, node):
         method = f'visit_{node.name}'
         visitor = getattr(self, method, self.generic_visit)
@@ -23,7 +23,7 @@ class NodeVisitor(object):
 
 class TypeChecker(NodeVisitor):
     def __init__(self):
-        self.current_scope = Scope()
+        self.symbol_table = SymbolTable()
         self.loop_count = 0
 
     def visit_IntNum(self, node):
@@ -36,58 +36,59 @@ class TypeChecker(NodeVisitor):
         return 'STRING'
 
     def visit_Variable(self, node):
-        ntype = self.current_scope.get(node.str)
-        if ntype == None:
-            print(f'Variable not present in current scope')
+        n_type = self.symbol_table[node.name]
+        if not n_type:
+            print('Variable not present in current scope')
             return 'ANY'
-        return ntype
+
+        return n_type
 
     def visit_ValueRange(self, node):
-        if not self.visit(node.start) == self.visit(node.end) == 'INT':
-            print(f"Range boundaries must be integers")
+        if not self(node.start) == self(node.end) == 'INT':
+            print("Range boundaries must be integers")
         return 'RANGE'
 
     def visit_While(self, node):
         self.loop_count += 1
 
-        condt = self.visit(node.cond)
-        if condt != 'BOOLEAN':
-            print(f'Expected condition resolving to boolean value, got {condt}')
+        condition = self(node.condition)
+        if condition != 'BOOLEAN':
+            print(f'Expected condition resolving to boolean value, got {condition}')
 
-        self.push_scope()
-        self.visit(node.instructions)
-        self.pop_scope()
+        self.symbol_table.push_scope()
+        self(node.instructions)
+        self.symbol.pop_scope()
 
         self.loop_count -= 1
         return None
 
     def visit_If(self, node):
-        condt = self.visit(node.condition)
-        if condt != 'BOOLEAN':
-            print(f'Expected condition resolving to boolean value, got {condt}')
+        condition = self(node.condition)
+        if condition != 'BOOLEAN':
+            print(f'Expected condition resolving to boolean value, got {condition}')
 
-        self.push_scope()
-        self.visit(node.instructions)
-        self.pop_scope()
+        self.symbol.push_scope()
+        self(node.instructions)
+        self.symbol.pop_scope()
 
-        self.push_scope()
-        self.visit(node.else_instruction)
-        self.pop_scope()
+        self.symbol.push_scope()
+        self(node.else_instruction)
+        self.symbol.pop_scope()
 
         return None
 
     def visit_For(self, node):
         self.loop_count += 1
-        ntype = self.visit(node.value_range)
-        if ntype != 'RANGE':
-            print(f'Expected range, got {ntype}')
+        n_type = self(node.value_range)
+        if n_type != 'RANGE':
+            print(f'Expected range, got {n_type}')
 
-        self.push_scope()
-        self.current_scope.put(node.id, 'INT')
+        self.symbol.push_scope()
+        self.symbol_table[node.iterator] = 'INT'
 
-        self.visit(node.instructions)
+        self(node.instructions)
 
-        self.pop_scope()
+        self.symbol.pop_scope()
         self.loop_count -= 1
         return None
 
@@ -134,5 +135,5 @@ class TypeChecker(NodeVisitor):
         pass
 
     def visit_Print(self, node):
-        self.visit(node.value)
+        self(node.value)
         return None

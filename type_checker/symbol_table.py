@@ -3,33 +3,40 @@ class Scope:
         self.dict = dict()
         self.parent = parent
 
-    def put(self, name, symbol):
+    def __setitem__(self, name, symbol):
         self.dict[name] = symbol
 
-    def get(self, name):
+    def __getitem__(self, name):
         if name in self.dict:
             return self.dict[name]
-        if self.parent == None:
-            return None
-        return self.parent.get(name)
+
+        return self.parent[name] if self.parent else None
 
 
-class SymbolTable(object):
-
-    def __init__(self, parent, name): # parent scope and symbol table name
+class SymbolTable:
+    def __init__(self, parent, name):
+        """
+        Parent scope and symbol table name
+        """
         pass
 
-    def put(self, name, symbol): # put variable symbol or fundef under <name> entry
+    def __setitem__(self, name, symbol):
+        """
+        Put variable symbol or fundef under <name> entry
+        """
         pass
 
-    def get(self, name): # get variable symbol or fundef from <name> entry
+    def __getitem__(self, name):
+        """
+        Get variable symbol or fundef from <name> entry
+        """
         pass
 
-    def getParentScope(self):
+    def get_parent_scope(self):
         pass
 
-    def pushScope(self, name):
+    def push_scope(self, name):
         pass
 
-    def popScope(self):
+    def pop_scope(self):
         pass
