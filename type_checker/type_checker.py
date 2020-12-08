@@ -19,6 +19,9 @@ class NodeVisitor:
                 self(element)
             return
 
+        if not node or not hasattr(node, 'children'):
+            return
+
         for child in node.children:
             self(child)
 
