@@ -112,6 +112,7 @@ class TypeChecker(NodeVisitor):
                 print(f'Line {node.line_number}: Inconsistent matrix vector lengths')
         else:
             print(types)
+        return 'LIST'
 
     def visit_Value(self, node):
         pass
@@ -173,7 +174,10 @@ class TypeChecker(NodeVisitor):
         type2 = self(node.right)
         n_type = self.symbol_table[node.left.variable_name]
         if not n_type:
-            self.symbol_table[node.left.variable_name] = type2
+            if type2 is None:
+                self.symbol_table[node.left.variable_name] = 'ANY'
+            else:
+                self.symbol_table[node.left.variable_name] = type2
             print(type2)
         type1 = self(node.left)
         
