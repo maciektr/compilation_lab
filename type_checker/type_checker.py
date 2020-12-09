@@ -110,8 +110,6 @@ class TypeChecker(NodeVisitor):
         elif isinstance(node.values[0], ast.List):
             if any(len(node.values[0]) != len(item) for item in node.values):
                 print(f'Line {node.line_number}: Inconsistent matrix vector lengths')
-        else:
-            pass
         return 'LIST'
 
     def visit_Value(self, node):
