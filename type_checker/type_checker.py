@@ -162,7 +162,7 @@ class TypeChecker(NodeVisitor):
         n_type = self.symbol_table[node.left.variable_name]
         if not n_type:
             self.symbol_table[node.left.variable_name] = 'INT'
-            
+
 
     def visit_Print(self, node):
         self(node.value)

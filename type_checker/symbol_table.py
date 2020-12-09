@@ -41,6 +41,8 @@ class SymbolTable:
         while scope:
             if name in scope:
                 return scope[name]
+            if not isinstance(scope, Scope):
+                return
             scope = scope.parent
 
     @property

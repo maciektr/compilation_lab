@@ -93,9 +93,14 @@ def p_print(p):
     )
 
 def p_id_instruction(p):
-    """ID_INSTRUCTION : ID
-                      | ID_PART"""
+    """ID_INSTRUCTION : ID_PART"""
     p[0] = p[1]
+
+def p_id_instruction_id(p):
+    """ID_INSTRUCTION : ID"""
+    p[0] = ast.Variable(
+        variable_name=p[1],
+    )
 
 def p_instruction_assign(p):
     """INSTRUCTION : ID_INSTRUCTION PLUSASGN EXPRESSION

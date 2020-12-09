@@ -163,4 +163,4 @@ class TreePrinter:
 
     @add_to_class(ast.Variable)
     def print_tree(self, indent=0):
-        print_ind(self.name, indent)
+        print_ind(self.variable_name, indent)
