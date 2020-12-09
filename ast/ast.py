@@ -139,7 +139,8 @@ class Partition(Node):
     value_end: Node
 
 class Value(Node):
-    def __init__(self, values):
+    def __init__(self, values, line_number):
+        super().__init__(line_number=line_number)
         self.values = parse_list_values(values) if values else []
 
 class List(Node):
@@ -152,7 +153,8 @@ class List(Node):
         self.values = list(filter(lambda item: not isinstance(item, Value), self.values))
         self.values = [*self.values, *ast_values]
 
-    def __init__(self, values):
+    def __init__(self, values, line_number):
+        super().__init__(line_number=line_number)
         self.values = values if values else []
         self.__reduce()
 
