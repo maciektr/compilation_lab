@@ -176,7 +176,7 @@ class TypeChecker(NodeVisitor):
                 self.symbol_table[node.left.variable_name] = 'ANY'
             else:
                 self.symbol_table[node.left.variable_name] = type2
-            print(type2)
+            #print(type2)
         type1 = self(node.left)
         
 
