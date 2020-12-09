@@ -172,7 +172,7 @@ class Logical(Node):
 
 @dataclass
 class Variable(Node):
-    name: str
+    variable_name: str
 
 class Error(Node):
     def __init__(self):

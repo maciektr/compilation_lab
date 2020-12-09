@@ -182,7 +182,9 @@ def p_values_list_def(p):
 
 def p_expression_id(p):
     """EXPRESSION : ID"""
-    p[0] = p[1]
+    p[0] = ast.Variable(
+        variable_name=p[1],
+    )
 
 def p_expression_parenthese(p):
     """EXPRESSION : '(' EXPRESSION ')'"""

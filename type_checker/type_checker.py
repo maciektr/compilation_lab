@@ -43,9 +43,8 @@ class TypeChecker(NodeVisitor):
         return 'STRING'
 
     def visit_Variable(self, node):
-        print('t')
         n_type = self.symbol_table[node.name]
-        if isinstance(n_type, None):
+        if not n_type:
             print('Variable not present in current scope')
             return 'ANY'
 
