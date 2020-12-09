@@ -141,9 +141,10 @@ class Value(Node):
 
 class List(Node):
     def __reduce(self):
-        while isinstance(self.values, List):
+        while isinstance(self.values, List) or isinstance(self.values, Value):
             self.values = self.values.values
         assert isinstance(self.values, list)
+        self.values = list(map(lambda item: item.values if isinstance(item, Value) else item, self.values))
 
     def __init__(self, values):
         self.values = values if values else []
