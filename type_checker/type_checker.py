@@ -43,7 +43,7 @@ class TypeChecker(NodeVisitor):
         return 'STRING'
 
     def visit_Variable(self, node):
-        n_type = self.symbol_table[node.name]
+        n_type = self.symbol_table[node.variable_name]
         if not n_type:
             print('Variable not present in current scope')
             return 'ANY'
@@ -159,9 +159,9 @@ class TypeChecker(NodeVisitor):
     def visit_Assign(self, node):
         type1 = self(node.left)
         type2 = self(node.right)
-        n_type = self.symbol_table[node.left]
+        n_type = self.symbol_table[node.left.variable_name]
         if not n_type:
-            self.symbol_table[node.left] = 'INT'
+            self.symbol_table[node.left.variable_name] = 'INT'
             
 
     def visit_Print(self, node):
