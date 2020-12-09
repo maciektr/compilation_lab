@@ -1,4 +1,5 @@
 from type_checker.symbol_table import SymbolTable
+from ast import *
 
 
 class NodeVisitor:
@@ -98,13 +99,19 @@ class TypeChecker(NodeVisitor):
         pass
 
     def visit_List(self, node):
-        types = list(map(self, node.values))
+        types = []
+
+        for v in node.values:
+            types.append(type(v))
         list_type = types[0]
+        #nie chce to działać specjalnie
         if any(list_type != t for t in types):
             print('Inconsistent types in a List')
-
+        elif isinstance(node.values[0], ast.List):
+            if any(len(node.values[0]) != len(v) for v in node.values):
+                print('Inconsistent matrix vector lenghts')
+        else: print(types) #debug print
         
-
     def visit_Value(self, node):
         pass
 
@@ -143,7 +150,9 @@ class TypeChecker(NodeVisitor):
         pass
 
     def visit_Assign(self, node):
-        pass
+        type1 = self(node.left)
+        type2 = self(node.right)
+        
 
     def visit_Print(self, node):
         self(node.value)
