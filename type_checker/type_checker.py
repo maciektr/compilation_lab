@@ -142,6 +142,14 @@ class TypeChecker(NodeVisitor):
     def visit_BinaryOperation(self, node):
         type1 = self(node.left)
         type2 = self(node.right)
+        if type1 != type2:
+            print(f'Line {node.line_number}: Type mismatch in {node.operator} operation')
+        else:
+            if node.operator in ['.+', './', '.*', '.-'] and type1 != ast.List:
+                print(f'Line {node.line_number}: Operation {node.operator} allowed only for matrices')
+            if isinstance(node.left, ast.List) and len(node.left.values) != len(node.right.values):
+                print(f'Line {node.line_number}: Operation {node.operator} on lists with diferent sizes!')
+            
 
 
     def visit_Continue(self, node):
