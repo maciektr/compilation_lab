@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field, InitVar
 from typing import List as ListType
 
 
@@ -31,7 +31,10 @@ def parse_list_values(values):
 # too-few-public-methods
 # pylint: disable=R0903
 
+@dataclass
 class Node:
+    line_number : int
+
     @property
     def name(self):
         return self.__class__.__name__
@@ -41,9 +44,9 @@ class Node:
         return list(vars(self).values())
 
 
+@dataclass
 class Instructions(Node):
-    def __init__(self, instructions):
-        self.instructions = instructions
+    instructions : ListType
 
 @dataclass
 class InstructionBlock(Node):
