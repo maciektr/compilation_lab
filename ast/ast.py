@@ -144,7 +144,10 @@ class List(Node):
         while isinstance(self.values, List) or isinstance(self.values, Value):
             self.values = self.values.values
         assert isinstance(self.values, list)
-        self.values = list(map(lambda item: item.values if isinstance(item, Value) else item, self.values))
+        ast_values = list(filter(lambda item: isinstance(item, Value), self.values))
+        ast_values = [item for sublist in ast_values for item in sublist.values]
+        self.values = list(filter(lambda item: not isinstance(item, Value), self.values))
+        self.values = [*self.values, *ast_values]
 
     def __init__(self, values):
         self.values = values if values else []
@@ -152,6 +155,9 @@ class List(Node):
 
     def __repr__(self):
         return f'<ast.List at {id(self)}: {self.values}>'
+
+    def __len__(self):
+        return len(self.values)
 
     def append(self, value):
         self.values.append(List(value))
