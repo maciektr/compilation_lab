@@ -43,8 +43,9 @@ class TypeChecker(NodeVisitor):
         return 'STRING'
 
     def visit_Variable(self, node):
+        print('t')
         n_type = self.symbol_table[node.name]
-        if not n_type:
+        if isinstance(n_type, None):
             print('Variable not present in current scope')
             return 'ANY'
 
@@ -96,7 +97,9 @@ class TypeChecker(NodeVisitor):
         self.loop_count -= 1
 
     def visit_Logical(self, node):
-        pass
+        type1 = self(node.left)
+        type2 = self(node.right)
+
 
     def visit_List(self, node):
         types = []
@@ -122,19 +125,27 @@ class TypeChecker(NodeVisitor):
         
 
     def visit_Eye(self, node):
-        pass
+        type1 = self(node.value)
+        if type1 != 'INT':
+            print('Incorrect Eye size')
 
     def visit_Ones(self, node):
-        pass
+        type1 = self(node.value)
+        if type1 != 'INT':
+            print('Incorrect Ones size')
 
     def visit_Zeros(self, node):
-        pass
+        type1 = self(node.value)
+        if type1 != 'INT':
+            print('Incorrect Zeros size')
 
     def visit_Transpose(self, node):
         pass
 
     def visit_BinaryOperation(self, node):
-        pass
+        print('test') #never enters binaryoperation
+        type1 = self(node.left)
+        type2 = self(node.right)
 
     def visit_Continue(self, node):
         if self.loop_count == 0:
@@ -152,6 +163,10 @@ class TypeChecker(NodeVisitor):
     def visit_Assign(self, node):
         type1 = self(node.left)
         type2 = self(node.right)
+        n_type = self.symbol_table[node.left]
+        if not n_type:
+        #    self.symbol_table[node.left] = type2
+            pass
         
 
     def visit_Print(self, node):

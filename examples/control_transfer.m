@@ -11,5 +11,7 @@ return x+1;
 
 return 2*x;
 
+x = z;
+
 print x;
 
