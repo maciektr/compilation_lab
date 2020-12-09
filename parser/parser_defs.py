@@ -32,7 +32,7 @@ def p_instructions(p):
                     | INSTRUCTIONS SINGLE_INSTRUCTION"""
     p[0] = ast.Instructions(
         instructions=[p[1]] + ([p[2]] if len(p) > 2 else []),
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_single_instruction(p):
@@ -55,7 +55,7 @@ def p_instruction_block(p):
     """INSTRUCTION_BLOCK : '{' INSTRUCTIONS '}'"""
     p[0] = ast.InstructionBlock(
         instructions=p[2],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_if(p):
@@ -65,14 +65,14 @@ def p_if(p):
         condition=p[3],
         instructions=p[5],
         else_instruction=p[6] if len(p) > 6 else None,
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_else(p):
     """ELSEINS : ELSE SINGLE_INSTRUCTION """
     p[0] = ast.Else(
         instructions=p[2],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_while(p):
@@ -80,7 +80,7 @@ def p_while(p):
     p[0] = ast.While(
         condition=p[3],
         instructions=p[5],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_for(p):
@@ -89,14 +89,14 @@ def p_for(p):
         iterator=p[2],
         value_range=p[4],
         instructions=p[5],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_print(p):
     """INSTRUCTION : PRINT VALUES"""
     p[0] = ast.Print(
         value=p[2],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_id_instruction(p):
@@ -107,7 +107,7 @@ def p_id_instruction_id(p):
     """ID_INSTRUCTION : ID"""
     p[0] = ast.Variable(
         variable_name=p[1],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_instruction_assign(p):
@@ -120,7 +120,7 @@ def p_instruction_assign(p):
         left=p[1],
         right=p[3],
         operator=p[2],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_instruction_return(p):
@@ -128,19 +128,19 @@ def p_instruction_return(p):
                    | RETURN EXPRESSION"""
     p[0] = ast.Return(
         value=p[2] if len(p) > 2 else None,
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_break(p):
     """INSTRUCTION : BREAK"""
     p[0] = ast.Break(
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_continue(p):
     """INSTRUCTION : CONTINUE"""
     p[0] = ast.Continue(
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_expression_operation(p):
@@ -157,7 +157,7 @@ def p_expression_operation(p):
         left=p[1],
         right=p[3],
         operator=p[2],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_expression_value(p):
@@ -173,21 +173,21 @@ def p_expression_string(p):
     """EXPRESSION : STRING"""
     p[0] = ast.String(
         value=p[1],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_numerical_intnum(p):
     """NUMERICAL : INTNUM"""
     p[0] = ast.IntNum(
         value=p[1],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_numerical_realnum(p):
     """NUMERICAL : REAL"""
     p[0] = ast.RealNum(
         value=p[1],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_range(p):
@@ -195,7 +195,7 @@ def p_range(p):
     p[0] = ast.ValueRange(
         start = p[1],
         end = p[3],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_values_def(p):
@@ -208,14 +208,14 @@ def p_values_list_def(p):
               | VALUES ',' EXPRESSION"""
     p[0] = ast.Value(
         values=[p[1], p[3]],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_expression_id(p):
     """EXPRESSION : ID"""
     p[0] = ast.Variable(
         variable_name=p[1],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_expression_parenthese(p):
@@ -226,28 +226,28 @@ def p_expression_zeros(p):
     """EXPRESSION : ZEROS '(' INTNUM ')'"""
     p[0] = ast.Zeros(
         value=p[3],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_expression_ones(p):
     """EXPRESSION : ONES '(' INTNUM ')'"""
     p[0] = ast.Ones(
         value=p[3],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_expression_eye(p):
     """EXPRESSION : EYE '(' INTNUM ')'"""
     p[0] = ast.Eye(
         value=p[3],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_expression_transpose(p):
     """EXPRESSION : EXPRESSION "\'" """
     p[0] = ast.Transpose(
         value=p[1],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_id_part(p):
@@ -256,21 +256,21 @@ def p_id_part(p):
         variable=p[1],
         value_start=p[3],
         value_end=p[5],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_list(p):
     """ LIST : '[' VALUES ']'"""
     p[0] = ast.List(
         values=[p[2]],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_list_extend_values(p):
     """SUPERLIST : LIST ',' LIST"""
     p[0] = ast.List(
         values=[p[1],p[3]],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
 
 def p_superlist_extension(p):
@@ -289,5 +289,5 @@ def p_logical(p):
         left=p[1],
         right=p[3],
         operator=p[2],
-        line_number=p.lineno,
+        line_number=p.lexer.lineno,
     )
