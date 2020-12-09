@@ -61,7 +61,7 @@ class TypeChecker(NodeVisitor):
         if condition != 'BOOLEAN':
             print(f'Expected condition resolving to boolean value, got {condition}')
 
-        self.symbol_table.push_scope()
+        self.symbol_table.push_scope('WHILE')
         self(node.instructions)
         self.symbol_table.pop_scope()
 
@@ -72,11 +72,11 @@ class TypeChecker(NodeVisitor):
         if condition != 'BOOLEAN':
             print(f'Expected condition resolving to boolean value, got {condition}')
 
-        self.symbol_table.push_scope()
+        self.symbol_table.push_scope('IF')
         self(node.instructions)
         self.symbol_table.pop_scope()
 
-        self.symbol_table.push_scope()
+        self.symbol_table.push_scope('IF')
         self(node.else_instruction)
         self.symbol_table.pop_scope()
 
@@ -86,7 +86,7 @@ class TypeChecker(NodeVisitor):
         if n_type != 'RANGE':
             print(f'Expected range, got {n_type}')
 
-        self.symbol_table.push_scope()
+        self.symbol_table.push_scope('FOR')
         self.symbol_table[node.iterator] = 'INT'
 
         self(node.instructions)
@@ -98,13 +98,21 @@ class TypeChecker(NodeVisitor):
         pass
 
     def visit_List(self, node):
-        pass
+        types = list(map(self, node.values))
+        list_type = types[0]
+        if any(list_type != t for t in types):
+            print('Inconsistent types in a List')
+
+        
 
     def visit_Value(self, node):
         pass
 
     def visit_Partition(self, node):
-        pass
+        n_type = self.symbol_table[node.variable]
+        if not n_type:
+            print('Variable not present in current scope')
+        
 
     def visit_Eye(self, node):
         pass
@@ -122,10 +130,14 @@ class TypeChecker(NodeVisitor):
         pass
 
     def visit_Continue(self, node):
-        pass
+        if self.loop_count == 0:
+            print(f"Continue outside of loop")
+        return None
 
     def visit_Break(self, node):
-        pass
+        if self.loop_count == 0:
+            print(f"Break outside of loop")
+        return None
 
     def visit_Return(self, node):
         pass
