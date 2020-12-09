@@ -161,8 +161,8 @@ class TypeChecker(NodeVisitor):
         type2 = self(node.right)
         n_type = self.symbol_table[node.left]
         if not n_type:
-        #    self.symbol_table[node.left] = type2
-            pass
+            self.symbol_table[node.left] = 'INT'
+            
 
     def visit_Print(self, node):
         self(node.value)
