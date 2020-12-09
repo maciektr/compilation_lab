@@ -141,7 +141,6 @@ class TypeChecker(NodeVisitor):
         pass
 
     def visit_BinaryOperation(self, node):
-        print('test') #never enters binaryoperation
         type1 = self(node.left)
         type2 = self(node.right)
 
@@ -156,7 +155,7 @@ class TypeChecker(NodeVisitor):
         return None
 
     def visit_Return(self, node):
-        pass
+        type1 = self(node.value)
 
     def visit_Assign(self, node):
         type1 = self(node.left)
