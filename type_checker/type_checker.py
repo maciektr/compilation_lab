@@ -120,6 +120,10 @@ class TypeChecker(NodeVisitor):
         n_type = self.symbol_table[node.variable]
         if not n_type:
             print(f'Line {node.line_number}: Variable not present in current scope')
+        if n_type != 'LIST':
+            print(f'Line {node.line_number}: Attempt to partition an object, which is not List')
+        if n_type == 'LIST' and len(node.variable.values) < node.value_end or len(node.variable.values) < node.value_start:
+            print(f'Line {node.line_number}: Partition range out of bounds')
 
     def visit_Eye(self, node):
         type1 = self(node.value)
