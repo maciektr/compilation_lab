@@ -45,14 +45,14 @@ class TypeChecker(NodeVisitor):
     def visit_Variable(self, node):
         n_type = self.symbol_table[node.variable_name]
         if not n_type:
-            print(f'Variable {node.variable_name} not present in current scope')
+            print(f'Line {node.line_number}: Variable {node.variable_name} not present in current scope')
             return 'ANY'
 
         return n_type
 
     def visit_ValueRange(self, node):
         if not self(node.start) == self(node.end) == 'INT':
-            print("Range boundaries must be integers")
+            print(f"Line {node.line_number}: Range boundaries must be integers")
         return 'RANGE'
 
     def visit_While(self, node):
@@ -60,7 +60,7 @@ class TypeChecker(NodeVisitor):
 
         condition = self(node.condition)
         if condition != 'BOOLEAN':
-            print(f'Expected condition resolving to boolean value, got {condition}')
+            print(f'Line {node.line_number}: Expected condition resolving to boolean value, got {condition}')
 
         self.symbol_table.push_scope('WHILE')
         self(node.instructions)
@@ -71,7 +71,7 @@ class TypeChecker(NodeVisitor):
     def visit_If(self, node):
         condition = self(node.condition)
         if condition != 'BOOLEAN':
-            print(f'Expected condition resolving to boolean value, got {condition}')
+            print(f'Line {node.line_number}: Expected condition resolving to boolean value, got {condition}')
 
         self.symbol_table.push_scope('IF')
         self(node.instructions)
@@ -85,7 +85,7 @@ class TypeChecker(NodeVisitor):
         self.loop_count += 1
         n_type = self(node.value_range)
         if n_type != 'RANGE':
-            print(f'Expected range, got {n_type}')
+            print(f'Line {node.line_number}: Expected range, got {n_type}')
 
         self.symbol_table.push_scope('FOR')
         self.symbol_table[node.iterator] = 'INT'
@@ -106,10 +106,10 @@ class TypeChecker(NodeVisitor):
             types.append(type(v))
         list_type = types[0]
         if any(list_type != item_type for item_type in types):
-            print('Inconsistent types in a List')
+            print(f'Line {node.line_number}: Inconsistent types in a List')
         elif isinstance(node.values[0], ast.List):
             if any(len(node.values[0]) != len(item) for item in node.values):
-                print('Inconsistent matrix vector lengths')
+                print(f'Line {node.line_number}: Inconsistent matrix vector lengths')
         else:
             print(types)
 
@@ -119,22 +119,22 @@ class TypeChecker(NodeVisitor):
     def visit_Partition(self, node):
         n_type = self.symbol_table[node.variable]
         if not n_type:
-            print('Variable not present in current scope')
+            print(f'Line {node.line_number}: Variable not present in current scope')
 
     def visit_Eye(self, node):
         type1 = self(node.value)
         if type1 != 'INT':
-            print('Incorrect Eye size')
+            print(f'Line {node.line_number}: Incorrect Eye size')
 
     def visit_Ones(self, node):
         type1 = self(node.value)
         if type1 != 'INT':
-            print('Incorrect Ones size')
+            print(f'Line {node.line_number}: Incorrect Ones size')
 
     def visit_Zeros(self, node):
         type1 = self(node.value)
         if type1 != 'INT':
-            print('Incorrect Zeros size')
+            print(f'Line {node.line_number}: Incorrect Zeros size')
 
     def visit_Transpose(self, node):
         pass
@@ -143,26 +143,27 @@ class TypeChecker(NodeVisitor):
         type1 = self(node.left)
         type2 = self(node.right)
 
+
     def visit_Continue(self, node):
         if self.loop_count == 0:
-            print(f"Continue outside of loop")
+            print(f"Line {node.line_number}: Continue outside of loop")
         return None
 
     def visit_Break(self, node):
         if self.loop_count == 0:
-            print(f"Break outside of loop")
+            print(f"Line {node.line_number}: Break outside of loop")
         return None
 
     def visit_Return(self, node):
         type1 = self(node.value)
 
     def visit_Assign(self, node):
+        type2 = self(node.right)
         n_type = self.symbol_table[node.left.variable_name]
         if not n_type:
-            self.symbol_table[node.left.variable_name] = 'INT'
-
+            self.symbol_table[node.left.variable_name] = type2
         type1 = self(node.left)
-        type2 = self(node.right)
+        
 
     def visit_Print(self, node):
         self(node.value)
