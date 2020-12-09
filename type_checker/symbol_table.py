@@ -2,7 +2,7 @@ class Scope:
     def __init__(self, name: str, parent=None):
         self.dict = dict()
         self.name = name
-        self.parent = parent
+        self.parent : Scope = parent
 
     def __setitem__(self, name, symbol):
         self.dict[name] = symbol
@@ -37,13 +37,7 @@ class SymbolTable:
         """
         Get variable symbol or fundef from <name> entry
         """
-        scope = self.current_scope[name]
-        while scope:
-            if name in scope:
-                return scope[name]
-            if not isinstance(scope, Scope):
-                return
-            scope = scope.parent
+        return self.current_scope[name]
 
     @property
     def parent_scope(self):
