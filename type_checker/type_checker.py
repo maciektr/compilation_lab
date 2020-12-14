@@ -99,6 +99,8 @@ class TypeChecker(NodeVisitor):
         type1 = self(node.left)
         type2 = self(node.right)
 
+        return 'BOOLEAN'
+
 
     def visit_List(self, node):
         types = []
