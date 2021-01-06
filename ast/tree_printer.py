@@ -168,9 +168,8 @@ class TreePrinter:
     def print_tree(self, indent=0):
         print_ind('DIMENSION', indent)
         print_ind(self.values, indent + 1)
-        
+
     @add_to_class(ast.PartitionRange)
     def print_tree(self, indent=0):
         print_ind('PARTITIONRANGE', indent)
         print_ind(self.values, indent + 1)
-        

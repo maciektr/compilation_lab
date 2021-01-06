@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field, InitVar
+from dataclasses import dataclass
 from typing import List as ListType
 
 
@@ -157,7 +157,7 @@ class PartitionRange(Node):
             return self.values[self.idx-1]
         except IndexError:
             self.idx = 0
-            raise StopIteration
+            raise StopIteration from IndexError
 
     def __repr__(self):
         return f'<ast.PartitionRange at {id(self)}: {self.values}>'
@@ -183,7 +183,7 @@ class Value(Node):
 
 class List(Node):
     def __reduce(self):
-        while isinstance(self.values, List) or isinstance(self.values, Value):
+        while isinstance(self.values, (List, Value)):
             self.values = self.values.values
         assert isinstance(self.values, list)
         ast_values = list(filter(lambda item: isinstance(item, Value), self.values))
@@ -191,7 +191,7 @@ class List(Node):
         self.values = list(filter(lambda item: not isinstance(item, Value), self.values))
         self.values = [*self.values, *ast_values]
 
-    def __init__(self, values, line_number):
+    def __init__(self, values, line_number=None):
         super().__init__(line_number=line_number)
         self.values = values if values else []
         self.__reduce()
