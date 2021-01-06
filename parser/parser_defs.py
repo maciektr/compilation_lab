@@ -222,22 +222,33 @@ def p_expression_parenthese(p):
     """EXPRESSION : '(' EXPRESSION ')'"""
     p[0] = p[1]
 
+def p_new_dimension(p):
+    """DIMENSION : INTNUM """
+    p[0] = ast.Dimension(
+        values=(p[1],),
+        line_number=p.lexer.lineno,
+    )
+
+def p_extend_dimension(p):
+    """DIMENSION : DIMENSION ',' INTNUM"""
+    p[0] = p[1].append(p[3])
+
 def p_expression_zeros(p):
-    """EXPRESSION : ZEROS '(' INTNUM ')'"""
+    """EXPRESSION : ZEROS '(' DIMENSION ')'"""
     p[0] = ast.Zeros(
         value=p[3],
         line_number=p.lexer.lineno,
     )
 
 def p_expression_ones(p):
-    """EXPRESSION : ONES '(' INTNUM ')'"""
+    """EXPRESSION : ONES '(' DIMENSION ')'"""
     p[0] = ast.Ones(
         value=p[3],
         line_number=p.lexer.lineno,
     )
 
 def p_expression_eye(p):
-    """EXPRESSION : EYE '(' INTNUM ')'"""
+    """EXPRESSION : EYE '(' DIMENSION ')'"""
     p[0] = ast.Eye(
         value=p[3],
         line_number=p.lexer.lineno,
@@ -266,16 +277,16 @@ def p_list(p):
         line_number=p.lexer.lineno,
     )
 
-def p_list_extend_values(p):
-    """SUPERLIST : LIST ',' LIST"""
-    p[0] = ast.List(
-        values=[p[1],p[3]],
-        line_number=p.lexer.lineno,
-    )
+# def p_list_extend_values(p):
+#     """SUPERLIST : LIST ',' LIST"""
+#     p[0] = ast.List(
+#         values=[p[1],p[3]],
+#         line_number=p.lexer.lineno,
+#     )
 
-def p_superlist_extension(p):
-    """SUPERLIST : SUPERLIST ',' LIST"""
-    p[0] = p[1].append(p[3])
+# def p_superlist_extension(p):
+#     """SUPERLIST : SUPERLIST ',' LIST"""
+#     p[0] = p[1].append(p[3])
 
 def p_logical(p):
     """LOGICAL : EXPRESSION EQUAL EXPRESSION

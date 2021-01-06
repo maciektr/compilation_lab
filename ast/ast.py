@@ -179,6 +179,23 @@ class Logical(Node):
 class Variable(Node):
     variable_name: str
 
+class Dimension(Node):
+    def __init__(self, values, line_number):
+        super().__init__(line_number=line_number)
+        self.values = tuple(values if values else [])
+
+    def __repr__(self):
+        return f'<ast.Dimension at {id(self)}: {self.values}>'
+
+    def __len__(self):
+        return len(self.values)
+
+    def append(self, value):
+        return Dimension(
+            values=tuple(list(self.values) + [value]),
+            line_number=self.line_number,
+        )
+
 class Error(Node):
     def __init__(self):
         pass

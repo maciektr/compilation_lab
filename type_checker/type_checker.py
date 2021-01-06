@@ -33,6 +33,9 @@ class TypeChecker(NodeVisitor):
         self.symbol_table = SymbolTable('__type_checker__')
         self.loop_count = 0
 
+    def visit_Dimension(self, node):
+        return 'DIMENSION'
+
     def visit_IntNum(self, node):
         return 'INT'
 
@@ -130,17 +133,18 @@ class TypeChecker(NodeVisitor):
 
     def visit_Eye(self, node):
         type1 = self(node.value)
-        if type1 != 'INT':
+        if type1 != 'DIMENSION':
             print(f'Line {node.line_number}: Incorrect Eye size')
 
     def visit_Ones(self, node):
         type1 = self(node.value)
-        if type1 != 'INT':
+        if type1 != 'DIMENSION':
             print(f'Line {node.line_number}: Incorrect Ones size')
 
     def visit_Zeros(self, node):
         type1 = self(node.value)
-        if type1 != 'INT':
+        if type1 != 'DIMENSION':
+            print(type1, node.value)
             print(f'Line {node.line_number}: Incorrect Zeros size')
 
     def visit_Transpose(self, node):
@@ -156,8 +160,6 @@ class TypeChecker(NodeVisitor):
                 print(f'Line {node.line_number}: Operation {node.operator} allowed only for matrices')
             if isinstance(node.left, ast.List) and len(node.left.values) != len(node.right.values):
                 print(f'Line {node.line_number}: Operation {node.operator} on lists with diferent sizes!')
-            
-
 
     def visit_Continue(self, node):
         if self.loop_count == 0:
@@ -185,7 +187,6 @@ class TypeChecker(NodeVisitor):
                 self.symbol_table[node.left.variable_name] = type2
             #print(type2)
         type1 = self(node.left)
-        
 
     def visit_Print(self, node):
         self(node.value)
