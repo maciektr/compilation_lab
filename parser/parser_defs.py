@@ -2,13 +2,13 @@ import ast.ast as ast
 
 
 precedence = (
+    ("nonassoc", 'IFX'),
     ('left', 'LESSTHAN', 'GREATERTHAN', 'LESSOREQ', 'GREATEROREQ', 'NOTEQ', 'EQUAL'),
     ('left', '+', '-'),
     ('left', '*', '/'),
     ('left', 'DOTADD', 'DOTSUB'),
     ('left', 'DOTMUL', 'DOTDIV'),
     ('right', 'RANGEOP'),
-    ('nonassoc', 'IF'),
     ('nonassoc', 'ELSE'),
 )
 
@@ -59,7 +59,7 @@ def p_instruction_block(p):
     )
 
 def p_if(p):
-    """IFINS : IF '(' LOGICAL ')' SINGLE_INSTRUCTION
+    """IFINS : IF '(' LOGICAL ')' SINGLE_INSTRUCTION %prec IFX
              | IF '(' LOGICAL ')' SINGLE_INSTRUCTION ELSEINS"""
     p[0] = ast.If(
         condition=p[3],
