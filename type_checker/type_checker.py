@@ -104,24 +104,55 @@ class TypeChecker(NodeVisitor):
 
         return 'BOOLEAN'
 
-
     def visit_List(self, node):
-        types = []
-        for v in node.values:
-            types.append(type(v))
-        list_type = types[0]
-        if any(list_type != item_type for item_type in types):
+        list_type = type(node.values[0])
+        if any(list_type != type(item) for item in node.values):
             print(f'Line {node.line_number}: Inconsistent types in a List')
-        elif isinstance(node.values[0], ast.List):
+
+        if isinstance(node.values[0], ast.List):
             if any(len(node.values[0]) != len(item) for item in node.values):
                 print(f'Line {node.line_number}: Inconsistent matrix vector lengths')
+
         return 'LIST'
 
     def visit_Value(self, node):
         pass
 
+    @staticmethod
+    def valid_list_bounds(array, bounds):
+        def between(value, end, start=0):
+            return value >= start and value < end
+
+        def __do_check(to_validate, bounds):
+            if len(to_validate) != len(bounds):
+                return False
+            i = 0
+            for bound in bounds:
+                if isinstance(bound, ast.ValueRange):
+                    if not between(bound.start, to_validate[i]):
+                        return False
+                    if not between(bound.end, to_validate[i] + 1):
+                        # (+1) since ValueRange.end points to first not taken element
+                        return False
+                elif isinstance(bound, ast.IntNum):
+                    if not between(bound.value, to_validate[i]):
+                        return False
+                i += 1
+            return True
+
+        if isinstance(array, ast.Zeros) \
+            or isinstance(array, ast.Eye) \
+            or isinstance(array, ast.Ones):
+            return __do_check(array.value.values, bounds)
+
+        to_validate = [array[0]]
+        while isinstance(array[0], list):
+            array = array[0]
+            to_validate.append(array[0])
+
+        return __do_check(to_validate, bounds)
+
     def visit_Partition(self, node):
-        
         n_type = self.symbol_table[node.variable]
         if not n_type:
             print(f'Line {node.line_number}: Variable {node.variable} not present in current scope')
@@ -129,24 +160,27 @@ class TypeChecker(NodeVisitor):
             print(f'Line {node.line_number}: Attempt to partition an object, which is not List')
         if n_type == 'LIST':
             list_node = self.symbol_table[node.variable + '_node']
-            if len(list_node) < node.value_end or len(list_node) < node.value_start:
+            if not self.valid_list_bounds(list_node, node.bounds):
                 print(f'Line {node.line_number}: Partition range out of bounds')
 
     def visit_Eye(self, node):
         type1 = self(node.value)
         if type1 != 'DIMENSION':
             print(f'Line {node.line_number}: Incorrect Eye size')
+        return 'LIST'
 
     def visit_Ones(self, node):
         type1 = self(node.value)
         if type1 != 'DIMENSION':
             print(f'Line {node.line_number}: Incorrect Ones size')
+        return 'LIST'
 
     def visit_Zeros(self, node):
         type1 = self(node.value)
         if type1 != 'DIMENSION':
             print(type1, node.value)
             print(f'Line {node.line_number}: Incorrect Zeros size')
+        return 'LIST'
 
     def visit_Transpose(self, node):
         pass
@@ -157,7 +191,7 @@ class TypeChecker(NodeVisitor):
         if type1 != type2:
             print(f'Line {node.line_number}: Type mismatch in {node.operator} operation')
         else:
-            if node.operator in ['.+', './', '.*', '.-'] and type1 != ast.List:
+            if node.operator in ['.+', './', '.*', '.-'] and type1 != 'LIST':
                 print(f'Line {node.line_number}: Operation {node.operator} allowed only for matrices')
             if isinstance(node.left, ast.List) and len(node.left.values) != len(node.right.values):
                 print(f'Line {node.line_number}: Operation {node.operator} on lists with diferent sizes!')
@@ -186,14 +220,14 @@ class TypeChecker(NodeVisitor):
         type2 = self(node.right)
         n_type = self.symbol_table[get_variable_name(node.left)]
         if not n_type:
+            left_name = node.left.variable_name
             if type2 is None:
-                self.symbol_table[node.left.variable_name] = 'ANY'
+                self.symbol_table[left_name] = 'ANY'
             elif type2 == 'LIST':
-                self.symbol_table[node.left.variable_name] = type2
-                self.symbol_table[node.left.variable_name + '_node'] = node.right
+                self.symbol_table[left_name] = type2
+                self.symbol_table[left_name + '_node'] = node.right
             else:
-                self.symbol_table[node.left.variable_name] = type2
-            #print(type2)
+                self.symbol_table[left_name] = type2
         type1 = self(node.left)
 
     def visit_Print(self, node):

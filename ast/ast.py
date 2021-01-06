@@ -108,6 +108,16 @@ class BinaryOperation(Node):
 class IntNum(Node):
     value: int
 
+    def __ge__(self, other):
+        if isinstance(other, IntNum):
+            return self.value >= other.value
+        return self.value >= other
+
+    def __lt__(self, other):
+        if isinstance(other, IntNum):
+            return self.value < other.value
+        return self.value < other
+
 @dataclass
 class RealNum(Node):
     value: float
@@ -136,6 +146,18 @@ class PartitionRange(Node):
     def __init__(self, values, line_number):
         super().__init__(line_number=line_number)
         self.values = tuple(values if values else [])
+        self.idx = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.idx += 1
+        try:
+            return self.values[self.idx-1]
+        except IndexError:
+            self.idx = 0
+            raise StopIteration
 
     def __repr__(self):
         return f'<ast.PartitionRange at {id(self)}: {self.values}>'
@@ -153,8 +175,6 @@ class PartitionRange(Node):
 class Partition(Node):
     variable: Node
     bounds: PartitionRange
-    # value_start: Node
-    # value_end: Node
 
 class Value(Node):
     def __init__(self, values, line_number):
