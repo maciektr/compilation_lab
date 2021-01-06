@@ -48,8 +48,8 @@ class TypeChecker(NodeVisitor):
     def visit_Variable(self, node):
         n_type = self.symbol_table[node.variable_name]
         if not n_type:
-            print(f'Line {node.line_number}: Variable {node.variable_name} not present in \
-                current scope')
+            print(f'Line {node.line_number}: Variable {node.variable_name} not present in '
+                'current scope')
             return 'ANY'
 
         return n_type
@@ -64,8 +64,8 @@ class TypeChecker(NodeVisitor):
 
         condition = self(node.condition)
         if condition != 'BOOLEAN':
-            print(f'Line {node.line_number}: Expected condition resolving to boolean value, \
-                got {condition}')
+            print(f'Line {node.line_number}: Expected condition resolving to boolean value,'
+                ' got {condition}')
 
         self.symbol_table.push_scope('WHILE')
         self(node.instructions)
@@ -76,8 +76,8 @@ class TypeChecker(NodeVisitor):
     def visit_If(self, node):
         condition = self(node.condition)
         if condition != 'BOOLEAN':
-            print(f'Line {node.line_number}: Expected condition resolving to boolean value, \
-                got {condition}')
+            print(f'Line {node.line_number}: Expected condition resolving to boolean value,'
+                ' got {condition}')
 
         self.symbol_table.push_scope('IF')
         self(node.instructions)
@@ -178,12 +178,13 @@ class TypeChecker(NodeVisitor):
     def visit_Zeros(self, node):
         type1 = self(node.value)
         if type1 != 'DIMENSION':
-            print(type1, node.value)
             print(f'Line {node.line_number}: Incorrect Zeros size')
         return 'LIST'
 
     def visit_Transpose(self, node):
-        pass
+        target_type = self(node.target)
+        if target_type != 'LIST':
+            print(f'Line {node.line_number}: Transpose can be run only on a matrix')
 
     def visit_BinaryOperation(self, node):
         type1 = self(node.left)
@@ -192,11 +193,11 @@ class TypeChecker(NodeVisitor):
             print(f'Line {node.line_number}: Type mismatch in {node.operator} operation')
         else:
             if node.operator in ['.+', './', '.*', '.-'] and type1 != 'LIST':
-                print(f'Line {node.line_number}: Operation {node.operator} allowed \
-                    only for matrices')
+                print(f'Line {node.line_number}: Operation {node.operator} allowed'
+                    ' only for matrices')
             if isinstance(node.left, ast.List) and len(node.left.values) != len(node.right.values):
-                print(f'Line {node.line_number}: Operation {node.operator} on lists with \
-                    diferent sizes!')
+                print(f'Line {node.line_number}: Operation {node.operator} on lists with'
+                    ' diferent sizes!')
 
     def visit_Continue(self, node):
         if self.loop_count == 0:
@@ -218,18 +219,15 @@ class TypeChecker(NodeVisitor):
                 return variable.variable
             return None
 
-        type2 = self(node.right)
-        n_type = self.symbol_table[get_variable_name(node.left)]
-        if not n_type:
-            left_name = node.left.variable_name
-            if type2 is None:
-                self.symbol_table[left_name] = 'ANY'
-            elif type2 == 'LIST':
-                self.symbol_table[left_name] = type2
-                self.symbol_table[left_name + '_node'] = node.right
-            else:
-                self.symbol_table[left_name] = type2
-        # type1 = self(node.left)
+        right_type = self(node.right)
+        left_name = get_variable_name(node.left)
+        if right_type is None:
+            self.symbol_table[left_name] = 'ANY'
+        elif right_type == 'LIST':
+            self.symbol_table[left_name] = right_type
+            self.symbol_table[left_name + '_node'] = node.right
+        else:
+            self.symbol_table[left_name] = right_type
 
     def visit_Print(self, node):
         self(node.value)

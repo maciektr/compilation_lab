@@ -202,6 +202,12 @@ class List(Node):
     def __len__(self):
         return len(self.values)
 
+    def __setitem__(self, index, value):
+        self.values[index] = value
+
+    def __getitem__(self, index):
+        return self.values[index]
+
     def append(self, value):
         self.values.append(List(value))
         self.__reduce()

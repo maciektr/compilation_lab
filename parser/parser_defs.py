@@ -151,12 +151,20 @@ def p_expression_operation(p):
                   | EXPRESSION DOTADD EXPRESSION
                   | EXPRESSION DOTSUB EXPRESSION
                   | EXPRESSION DOTMUL EXPRESSION
-                  | EXPRESSION DOTDIV EXPRESSION
-                  | '-' EXPRESSION"""
+                  | EXPRESSION DOTDIV EXPRESSION"""
     p[0] = ast.BinaryOperation(
         left=p[1],
         right=p[3],
         operator=p[2],
+        line_number=p.lexer.lineno,
+    )
+
+def p_expression_negative(p):
+    """EXPRESSION : '-' EXPRESSION"""
+    p[0] = ast.BinaryOperation(
+        left=p[1],
+        right=-1,
+        operator='*',
         line_number=p.lexer.lineno,
     )
 
@@ -257,7 +265,7 @@ def p_expression_eye(p):
 def p_expression_transpose(p):
     """EXPRESSION : EXPRESSION "\'" """
     p[0] = ast.Transpose(
-        value=p[1],
+        target=p[1],
         line_number=p.lexer.lineno,
     )
 
