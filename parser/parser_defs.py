@@ -261,12 +261,24 @@ def p_expression_transpose(p):
         line_number=p.lexer.lineno,
     )
 
+def p_range_partition(p):
+    """PART_RANGE : RANGE
+                  | INTNUM"""
+    p[0] = ast.PartitionRange(
+        values=[p[1]],
+        line_number=p.lexer.lineno,
+    )
+
+def p_range_partition_extension(p):
+    """PART_RANGE : PART_RANGE ',' RANGE
+                  | PART_RANGE ',' INTNUM"""
+    p[0] = p[1].append(p[3])
+
 def p_id_part(p):
-    """ID_PART : ID '[' INTNUM ',' INTNUM ']'"""
+    """ID_PART : ID '[' PART_RANGE ']'"""
     p[0] = ast.Partition(
         variable=p[1],
-        value_start=p[3],
-        value_end=p[5],
+        bounds=p[3],
         line_number=p.lexer.lineno,
     )
 

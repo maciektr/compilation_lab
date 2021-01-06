@@ -132,11 +132,29 @@ class Ones(Node):
 class Eye(Node):
     value: IntNum
 
+class PartitionRange(Node):
+    def __init__(self, values, line_number):
+        super().__init__(line_number=line_number)
+        self.values = tuple(values if values else [])
+
+    def __repr__(self):
+        return f'<ast.PartitionRange at {id(self)}: {self.values}>'
+
+    def __len__(self):
+        return len(self.values)
+
+    def append(self, value):
+        return PartitionRange(
+            values=tuple(list(self.values) + [value]),
+            line_number=self.line_number,
+        )
+
 @dataclass
 class Partition(Node):
     variable: Node
-    value_start: Node
-    value_end: Node
+    bounds: PartitionRange
+    # value_start: Node
+    # value_end: Node
 
 class Value(Node):
     def __init__(self, values, line_number):

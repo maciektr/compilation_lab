@@ -175,12 +175,19 @@ class TypeChecker(NodeVisitor):
         type1 = self(node.value)
 
     def visit_Assign(self, node):
+        def get_variable_name(variable):
+            if isinstance(variable, ast.Variable):
+                return variable.variable_name
+            if isinstance(variable, ast.Partition):
+                return variable.variable
+            return None
+
         type2 = self(node.right)
-        n_type = self.symbol_table[node.left.variable_name]
+        n_type = self.symbol_table[get_variable_name(node.left)]
         if not n_type:
             if type2 is None:
                 self.symbol_table[node.left.variable_name] = 'ANY'
-            elif type2 is 'LIST':
+            elif type2 == 'LIST':
                 self.symbol_table[node.left.variable_name] = type2
                 self.symbol_table[node.left.variable_name + '_node'] = node.right
             else:
