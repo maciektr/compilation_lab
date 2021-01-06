@@ -121,6 +121,7 @@ class TypeChecker(NodeVisitor):
         pass
 
     def visit_Partition(self, node):
+        
         n_type = self.symbol_table[node.variable]
         if not n_type:
             print(f'Line {node.line_number}: Variable {node.variable} not present in current scope')

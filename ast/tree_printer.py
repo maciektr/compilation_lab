@@ -143,8 +143,7 @@ class TreePrinter:
     def print_tree(self, indent=0):
         print_ind('PARTITION', indent)
         print_ind(self.variable, indent + 1)
-        print_ind(self.value_start, indent + 1)
-        print_ind(self.value_end, indent + 1)
+        print_ind(self.bounds, indent + 1)
 
     @add_to_class(ast.Value)
     def print_tree(self, indent=0):
@@ -168,5 +167,10 @@ class TreePrinter:
     @add_to_class(ast.Dimension)
     def print_tree(self, indent=0):
         print_ind('DIMENSION', indent)
+        print_ind(self.values, indent + 1)
+        
+    @add_to_class(ast.PartitionRange)
+    def print_tree(self, indent=0):
+        print_ind('PARTITIONRANGE', indent)
         print_ind(self.values, indent + 1)
         
