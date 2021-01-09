@@ -5,6 +5,7 @@ import getopt
 from parser import Parser
 from scanner import Scanner
 from type_checker import TypeChecker
+from interpreter import Interpreter
 
 OPTIONS = ['path=', 'lexer', 'clear', 'zip', 'use_cache', 'print_ast']
 PARSER_AUTO_FILES = ['parser/parser.out', 'parser/parsetab.py']
@@ -112,6 +113,12 @@ def main():
 
     type_checker = TypeChecker()
     type_checker(ast)
+    if not type_checker.accepted():
+        print('Cannot run your program: returning.')
+        return
+
+    interpreter = Interpreter()
+    interpreter(ast)
 
 
 if __name__ == '__main__':
