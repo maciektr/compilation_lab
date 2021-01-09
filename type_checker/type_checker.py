@@ -2,6 +2,7 @@ import ast
 from type_checker.symbol_table import SymbolTable
 
 
+COMPARABLE = ['INT', 'REAL', 'STRING']
 
 class NodeVisitor:
     def __call__(self, node):
@@ -34,8 +35,8 @@ class TypeChecker(NodeVisitor):
         self.symbol_table = SymbolTable('__type_checker__')
         self.loop_count = 0
 
-    def log_type_error(self, message: str):
-        print(message)
+    def log_type_error(self, message: str, line_number = None):
+        print((f'Line {line_number}: ' if line_number else '') + message)
 
     def visit_Dimension(self, node):
         return 'DIMENSION'
@@ -106,8 +107,16 @@ class TypeChecker(NodeVisitor):
         self.loop_count -= 1
 
     def visit_Logical(self, node):
-        # type1 = self(node.left)
-        # type2 = self(node.right)
+        type1 = self(node.left)
+        type2 = self(node.right)
+
+        if type1 != type2:
+            self.log_type_error(f'Cannot compare: different types ({type1} and {type2}).',
+                node.line_number)
+
+        if type1 not in COMPARABLE:
+            self.log_type_error(f'Variable type {type1} is not comparable.')
+
         return 'BOOLEAN'
 
     def visit_List(self, node):
@@ -215,7 +224,7 @@ class TypeChecker(NodeVisitor):
             self.log_type_error(f"Line {node.line_number}: Break outside of loop")
 
     def visit_Return(self, node):
-        # type1 = self(node.value)
+        # value_type = self(node.value)
         pass
 
     def visit_Assign(self, node):
