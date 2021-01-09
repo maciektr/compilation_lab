@@ -40,6 +40,7 @@ class NonValidVariableType(Exception):
 class NodeVisitor:
     def __init__(self):
         self.variable_types = VariableTypes()
+        self.called = False
 
     def __call__(self, node):
         visitor = self.generic_visit
@@ -48,6 +49,7 @@ class NodeVisitor:
             method = f'visit_{node.name}'
             visitor = getattr(self, method, self.generic_visit)
         return_type = visitor(node)
+        self.called = True
         if return_type and return_type not in self.variable_types:
             raise NonValidVariableType(f'Visitor {method} has returned a'
                 ' non valid type of {return_type}.')
@@ -76,8 +78,13 @@ class TypeChecker(NodeVisitor):
         super().__init__()
         self.symbol_table = SymbolTable('__type_checker__')
         self.loop_count = 0
+        self.accepted_state = True
+
+    def accepted(self):
+        return self.called and self.accepted_state
 
     def log_type_error(self, message: str, line_number = None):
+        self.accepted_state = False
         print((f'Line {line_number}: ' if line_number else '') + message)
 
     def visit_Dimension(self, node):
