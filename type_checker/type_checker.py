@@ -2,15 +2,56 @@ import ast
 from type_checker.symbol_table import SymbolTable
 
 
-COMPARABLE = ['INT', 'REAL', 'STRING']
+
+class VariableTypes:
+    VARIABLE_TYPES = [
+        'ANY',
+        'INT',
+        'REAL',
+        'LIST',
+        'RANGE',
+        'STRING',
+        'BOOLEAN',
+        'DIMENSION',
+    ]
+
+    COMPARABLE = [
+        'INT',
+        'REAL',
+        'STRING'
+    ]
+
+    def __init__(self):
+        pass
+
+    def __contains__(self, name):
+        return name in VariableTypes.VARIABLE_TYPES
+
+    @staticmethod
+    def comparable(name):
+        return name in VariableTypes.COMPARABLE
+
+
+
+class NonValidVariableType(Exception):
+    pass
+
 
 class NodeVisitor:
+    def __init__(self):
+        self.variable_types = VariableTypes()
+
     def __call__(self, node):
         visitor = self.generic_visit
+        method = 'generic_visit'
         if hasattr(node, 'name'):
             method = f'visit_{node.name}'
             visitor = getattr(self, method, self.generic_visit)
-        return visitor(node)
+        return_type = visitor(node)
+        if return_type and return_type not in self.variable_types:
+            raise NonValidVariableType(f'Visitor {method} has returned a'
+                ' non valid type of {return_type}.')
+        return return_type
 
     def generic_visit(self, node):
         """
@@ -32,6 +73,7 @@ class NodeVisitor:
 
 class TypeChecker(NodeVisitor):
     def __init__(self):
+        super().__init__()
         self.symbol_table = SymbolTable('__type_checker__')
         self.loop_count = 0
 
@@ -114,7 +156,7 @@ class TypeChecker(NodeVisitor):
             self.log_type_error(f'Cannot compare: different types ({type1} and {type2}).',
                 node.line_number)
 
-        if type1 not in COMPARABLE:
+        if not self.variable_types.comparable(type1):
             self.log_type_error(f'Variable type {type1} is not comparable.')
 
         return 'BOOLEAN'
