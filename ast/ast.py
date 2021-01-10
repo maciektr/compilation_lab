@@ -31,14 +31,22 @@ def parse_list_values(values):
 # too-few-public-methods
 # pylint: disable=R0903
 
+@dataclass
 class Node:
+    line_number : int
+
     @property
     def name(self):
         return self.__class__.__name__
 
+    @property
+    def children(self):
+        return list(vars(self).values())
+
+
+@dataclass
 class Instructions(Node):
-    def __init__(self, instructions):
-        self.instructions = instructions
+    instructions : ListType
 
 @dataclass
 class InstructionBlock(Node):
@@ -100,6 +108,16 @@ class BinaryOperation(Node):
 class IntNum(Node):
     value: int
 
+    def __ge__(self, other):
+        if isinstance(other, IntNum):
+            return self.value >= other.value
+        return self.value >= other
+
+    def __lt__(self, other):
+        if isinstance(other, IntNum):
+            return self.value < other.value
+        return self.value < other
+
 @dataclass
 class RealNum(Node):
     value: float
@@ -124,28 +142,71 @@ class Ones(Node):
 class Eye(Node):
     value: IntNum
 
+class PartitionRange(Node):
+    def __init__(self, values, line_number):
+        super().__init__(line_number=line_number)
+        self.values = tuple(values if values else [])
+        self.idx = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.idx += 1
+        try:
+            return self.values[self.idx-1]
+        except IndexError:
+            self.idx = 0
+            raise StopIteration from IndexError
+
+    def __repr__(self):
+        return f'<ast.PartitionRange at {id(self)}: {self.values}>'
+
+    def __len__(self):
+        return len(self.values)
+
+    def append(self, value):
+        return PartitionRange(
+            values=tuple(list(self.values) + [value]),
+            line_number=self.line_number,
+        )
+
 @dataclass
 class Partition(Node):
     variable: Node
-    value_start: Node
-    value_end: Node
+    bounds: PartitionRange
 
 class Value(Node):
-    def __init__(self, values):
+    def __init__(self, values, line_number):
+        super().__init__(line_number=line_number)
         self.values = parse_list_values(values) if values else []
 
 class List(Node):
     def __reduce(self):
-        while isinstance(self.values, List):
+        while isinstance(self.values, (List, Value)):
             self.values = self.values.values
         assert isinstance(self.values, list)
+        ast_values = list(filter(lambda item: isinstance(item, Value), self.values))
+        ast_values = [item for sublist in ast_values for item in sublist.values]
+        self.values = list(filter(lambda item: not isinstance(item, Value), self.values))
+        self.values = [*self.values, *ast_values]
 
-    def __init__(self, values):
+    def __init__(self, values, line_number=None):
+        super().__init__(line_number=line_number)
         self.values = values if values else []
         self.__reduce()
 
     def __repr__(self):
         return f'<ast.List at {id(self)}: {self.values}>'
+
+    def __len__(self):
+        return len(self.values)
+
+    def __setitem__(self, index, value):
+        self.values[index] = value
+
+    def __getitem__(self, index):
+        return self.values[index]
 
     def append(self, value):
         self.values.append(List(value))
@@ -160,7 +221,24 @@ class Logical(Node):
 
 @dataclass
 class Variable(Node):
-    name: str
+    variable_name: str
+
+class Dimension(Node):
+    def __init__(self, values, line_number):
+        super().__init__(line_number=line_number)
+        self.values = tuple(values if values else [])
+
+    def __repr__(self):
+        return f'<ast.Dimension at {id(self)}: {self.values}>'
+
+    def __len__(self):
+        return len(self.values)
+
+    def append(self, value):
+        return Dimension(
+            values=tuple(list(self.values) + [value]),
+            line_number=self.line_number,
+        )
 
 class Error(Node):
     def __init__(self):
