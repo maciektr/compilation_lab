@@ -1,2 +1,5 @@
 n = 10;
-print n+1;
+for i = 1:10 {
+    n = n +1;
+    print n;
+}

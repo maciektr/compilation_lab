@@ -1,7 +1,7 @@
 a = 0;
 b = 1;
-while (b < 1000) {
+while (b < 5) {
     print b;
-    b += a;
+    b = b + a;
     a = b - a;
 }
