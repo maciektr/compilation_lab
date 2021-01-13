@@ -51,8 +51,8 @@ class Interpreter:
     def visit(self, node):
         right = self(node.right)
         if node.operator != '=':
-            left = self(left)
-            right = self.operators(node.oper)(left, right)
+            left = self(node.left)
+            right = self.operators(node.operator)(left, right)
 
         if isinstance(node.left, ast.Variable):
             self.memstack[node.left.variable_name] = node.right
