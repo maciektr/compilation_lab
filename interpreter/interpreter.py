@@ -1,10 +1,12 @@
 import sys
+import numpy as np
 
 import ast
 from type_checker.symbol_table import SymbolTable
 from interpreter.memory import MemoryStack
 from interpreter.exceptions import  *
 from interpreter.visit import *
+from interpreter.visit import default
 from interpreter.operators import Operators
 
 sys.setrecursionlimit(10000)
@@ -15,11 +17,25 @@ class Interpreter:
         self.operators = Operators()
 
     def __call__(self, node):
-        return self.visit(node)
+        print('call', node)
+        self.visit(node)
 
     @on('node')
     def visit(self, node):
         pass
+
+    @default('node')
+    def visit(self, node):
+        if isinstance(node, list):
+            for element in node:
+                self(element)
+            return
+
+        if not node or not hasattr(node, 'children'):
+            return
+
+        for child in node.children:
+            self(child)
 
     @when(ast.BinaryOperation)
     def visit(self, node):
@@ -29,6 +45,7 @@ class Interpreter:
 
     @when(ast.Assign)
     def visit(self, node):
+        print('ass')
         right = self(node.right)
         if node.oper != '=':
             left = self(left)
@@ -69,3 +86,7 @@ class Interpreter:
         r2 = self(node.right)
         return self.operators(node.operator)(r1, r2)
 
+    @when(ast.Eye)
+    def visit(self, node):
+        print('eye')
+        return np.eye(int(node.value))
