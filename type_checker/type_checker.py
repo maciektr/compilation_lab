@@ -80,6 +80,7 @@ class TypeChecker(NodeVisitor):
         self.loop_count = 0
         self.accepted_state = True
 
+    @property
     def accepted(self):
         return self.called and self.accepted_state
 

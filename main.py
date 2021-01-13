@@ -113,7 +113,7 @@ def main():
 
     type_checker = TypeChecker()
     type_checker(ast)
-    if not type_checker.accepted():
+    if not type_checker.accepted:
         print('Cannot run your program: returning.')
         return
 
