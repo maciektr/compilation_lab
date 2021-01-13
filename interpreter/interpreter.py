@@ -39,7 +39,7 @@ class Interpreter:
 
     @when(ast.Variable)
     def visit(self, node):
-        return self(self.memstack[node.variable_name])
+        return self.memstack[node.variable_name]
 
     @when(ast.BinaryOperation)
     def visit(self, node):
@@ -55,7 +55,7 @@ class Interpreter:
             right = self.operators(node.operator)(left, right)
 
         if isinstance(node.left, ast.Variable):
-            self.memstack[node.left.variable_name] = node.right
+            self.memstack[node.left.variable_name] = right
 
     @when(ast.While)
     def visit(self, node):
@@ -83,7 +83,7 @@ class Interpreter:
             except BreakException:
                 break
             self.memstack[node.iterator] += 1
-            
+
 
     @when(ast.Break)
     def visit(self, node):
