@@ -37,6 +37,10 @@ class Interpreter:
         for child in node.children:
             self(child)
 
+    @when(ast.Variable)
+    def visit(self, node):
+        return self(self.memstack[node.variable_name])
+
     @when(ast.BinaryOperation)
     def visit(self, node):
         r1 = self(node.left)
@@ -56,9 +60,30 @@ class Interpreter:
     @when(ast.While)
     def visit(self, node):
         r = None
-        while self(node.cond):
-            r = self(node.body)
+        while self(node.condition):
+            try:
+                r = self(node.instructions)
+            except ContinueException:
+                pass
+            except BreakException:
+                break
         return r
+
+    @when(ast.For)
+    def visit(self, node):
+        range = node.value_range
+        r_start = self(range.start)
+        r_end = self(range.end)
+        self.memstack[node.iterator] = r_start
+        while self.memstack[node.iterator] <= r_end:
+            try:
+                self(node.instructions)
+            except ContinueException:
+                pass
+            except BreakException:
+                break
+            self.memstack[node.iterator] += 1
+            
 
     @when(ast.Break)
     def visit(self, node):
@@ -96,3 +121,7 @@ class Interpreter:
         if len(res) == 1:
             res = res[0]
         return res
+
+    @when(ast.Print)
+    def visit(self, node):
+        print(self(node.value))
