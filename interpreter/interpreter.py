@@ -18,7 +18,7 @@ class Interpreter:
 
     def __call__(self, node):
         print('call', node)
-        self.visit(node)
+        return self.visit(node)
 
     @on('node')
     def visit(self, node):
@@ -45,9 +45,8 @@ class Interpreter:
 
     @when(ast.Assign)
     def visit(self, node):
-        print('ass')
         right = self(node.right)
-        if node.oper != '=':
+        if node.operator != '=':
             left = self(left)
             right = self.operators(node.oper)(left, right)
 
@@ -67,17 +66,17 @@ class Interpreter:
 
     @when(ast.IntNum)
     def visit(self, node):
-        print("int " + node.value)
+        print("int ",  node.value)
         return int(node.value)
 
     @when(ast.RealNum)
     def visit(self, node):
-        print("real " + node.value)
+        print("real ", node.value)
         return float(node.value)
 
     @when(ast.String)
     def visit(self, node):
-        print("string " + node.value)
+        print("string ", node.value)
         return str(node.value)
 
     @when(ast.Logical)
@@ -88,5 +87,12 @@ class Interpreter:
 
     @when(ast.Eye)
     def visit(self, node):
-        print('eye')
-        return np.eye(int(node.value))
+        dim = self(node.value)
+        return np.eye(dim)
+
+    @when(ast.Dimension)
+    def visit(self, node):
+        res = node.values
+        if len(res) == 1:
+            res = res[0]
+        return res
