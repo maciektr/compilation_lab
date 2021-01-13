@@ -11,7 +11,7 @@ from interpreter.operators import Operators
 
 sys.setrecursionlimit(10000)
 
-DEBUG = True
+DEBUG = False
 def debug_print(*args):
     if DEBUG:
         print(*args)

@@ -8,6 +8,11 @@ def dotSub_f(a, b): return
 def dotMul_f(a,b):  return
 def dotDiv_f(a,b):  return
 
+def addasgn_f(a, b): return a + b
+def subasgn_f(a, b): return a - b
+def mulasgn_f(a,b):  return a * b
+def divasgn_f(a,b):  return a / b
+
 FUNCTION_DICT = {
     "+" : add_f,
     "-" : sub_f,
@@ -17,6 +22,10 @@ FUNCTION_DICT = {
     ".-" : dotSub_f,
     ".*" : dotMul_f,
     "./" : dotDiv_f,
+    "+=" : addasgn_f,
+    "-=" : subasgn_f,
+    "*=" : mulasgn_f,
+    "/=" : divasgn_f,
 }
 
 def eq_f(a, b):    return a == b
