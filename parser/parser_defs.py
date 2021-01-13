@@ -228,7 +228,7 @@ def p_expression_id(p):
 
 def p_expression_parenthese(p):
     """EXPRESSION : '(' EXPRESSION ')'"""
-    p[0] = p[1]
+    p[0] = p[2]
 
 def p_new_dimension(p):
     """DIMENSION : INTNUM """

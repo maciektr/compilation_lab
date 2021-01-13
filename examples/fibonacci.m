@@ -1,6 +1,6 @@
 a = 0;
 b = 1;
-while (b < 5) {
+while (b < 1000) {
     print b;
     b = b + a;
     a = b - a;
