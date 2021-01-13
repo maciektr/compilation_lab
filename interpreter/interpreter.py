@@ -11,13 +11,17 @@ from interpreter.operators import Operators
 
 sys.setrecursionlimit(10000)
 
+DEBUG = True
+def debug_print(*args):
+    if DEBUG:
+        print(*args)
 class Interpreter:
     def __init__(self):
         self.memstack = MemoryStack()
         self.operators = Operators()
 
     def __call__(self, node):
-        print('call', node)
+        debug_print('call', node)
         return self.visit(node)
 
     @on('node')
@@ -91,17 +95,17 @@ class Interpreter:
 
     @when(ast.IntNum)
     def visit(self, node):
-        print("int ",  node.value)
+        debug_print("int ",  node.value)
         return int(node.value)
 
     @when(ast.RealNum)
     def visit(self, node):
-        print("real ", node.value)
+        debug_print("real ", node.value)
         return float(node.value)
 
     @when(ast.String)
     def visit(self, node):
-        print("string ", node.value)
+        debug_print("string ", node.value)
         return str(node.value)
 
     @when(ast.Logical)
