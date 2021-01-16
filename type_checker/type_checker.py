@@ -1,6 +1,6 @@
 import ast
 from type_checker.symbol_table import SymbolTable
-from utils import stderr_print
+from utils import stderr_print, GenericVisit
 
 
 class VariableTypes:
@@ -37,7 +37,7 @@ class NonValidVariableType(Exception):
     pass
 
 
-class NodeVisitor:
+class NodeVisitor(GenericVisit):
     def __init__(self):
         self.variable_types = VariableTypes()
         self.called = False
@@ -54,21 +54,6 @@ class NodeVisitor:
             raise NonValidVariableType(f'Visitor {method} has returned a'
                 ' non valid type of {return_type}.')
         return return_type
-
-    def generic_visit(self, node):
-        """
-        Called if no explicit visitor function exists for a node.
-        """
-        if isinstance(node, list):
-            for element in node:
-                self(element)
-            return
-
-        if not node or not hasattr(node, 'children'):
-            return
-
-        for child in node.children:
-            self(child)
 
 # invalid-name no-self-use too-many-public-methods unused-argument
 # pylint: disable=C0103 R0201 R0904 W0613
@@ -257,7 +242,7 @@ class TypeChecker(NodeVisitor):
         if type1 != type2 and False:
             self.log_type_error(f'Line {node.line_number}: Type mismatch in {node.operator}'
                 ' operation')
-            return
+            return None
         if node.operator in ['.+', './', '.*', '.-'] and type1 != 'LIST':
             self.log_type_error(f'Line {node.line_number}: Operation {node.operator} allowed'
                 ' only for matrices')

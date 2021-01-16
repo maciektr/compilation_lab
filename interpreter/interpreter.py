@@ -7,7 +7,7 @@ from interpreter.memory import MemoryStack
 from interpreter.exceptions import BreakException, ContinueException, InterpreterException
 from interpreter.visit import default, when, on
 from interpreter.operators import Operators
-from utils import stdout_print
+from utils import stdout_print, GenericVisit
 
 sys.setrecursionlimit(10000)
 
@@ -24,7 +24,7 @@ def out_print(*args):
     stdout_print(*args)
 
 
-class Interpreter:
+class Interpreter(GenericVisit):
     def __init__(self):
         self.memstack = MemoryStack()
         self.operators = Operators()
@@ -39,16 +39,7 @@ class Interpreter:
 
     @default()
     def visit(self, node):
-        if isinstance(node, list):
-            for element in node:
-                self(element)
-            return
-
-        if not node or not hasattr(node, 'children'):
-            return
-
-        for child in node.children:
-            self(child)
+        self.generic_visit(node)
 
     @when(ast.Variable)
     def visit(self, node):

@@ -15,3 +15,20 @@ def exit_ok(message: str=None):
     if message:
         stderr_print(message)
     sys.exit(0)
+
+
+class GenericVisit:
+    def generic_visit(self, node):
+        """
+        Called if no explicit visitor function exists for a node.
+        """
+        if isinstance(node, list):
+            for element in node:
+                self(element)
+            return
+
+        if not node or not hasattr(node, 'children'):
+            return
+
+        for child in node.children:
+            self(child)
