@@ -152,10 +152,10 @@ class Interpreter:
 
     @when(ast.List)
     def visit(self, node):
-        res = np.array()
+        res = []
         for v in node.values:
-            np.append(res, self(v))
-        return res
+            res.append(self(v))
+        return np.array(res)
 
     @when(ast.Print)
     def visit(self, node):
