@@ -34,6 +34,7 @@ def zip_files(out):
     file_name = f'{OUT_FOLDER}/{out}.zip'
     rm_file(file_name)
     os.system(f"zip -r {file_name} ./ -x '*venv*' '*.git*' '*__pycache__*' '{OUT_FOLDER}/*'")
+    exit_ok()
 
 
 def clear():
