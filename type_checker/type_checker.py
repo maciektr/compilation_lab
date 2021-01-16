@@ -257,13 +257,14 @@ class TypeChecker(NodeVisitor):
         if type1 != type2 and False:
             self.log_type_error(f'Line {node.line_number}: Type mismatch in {node.operator}'
                 ' operation')
-        else:
-            if node.operator in ['.+', './', '.*', '.-'] and type1 != 'LIST':
-                self.log_type_error(f'Line {node.line_number}: Operation {node.operator} allowed'
-                    ' only for matrices')
-            if isinstance(node.left, ast.List) and len(node.left.values) != len(node.right.values):
-                self.log_type_error(f'Line {node.line_number}: Operation {node.operator} on lists'
-                    ' with diferent sizes!')
+            return
+        if node.operator in ['.+', './', '.*', '.-'] and type1 != 'LIST':
+            self.log_type_error(f'Line {node.line_number}: Operation {node.operator} allowed'
+                ' only for matrices')
+        if isinstance(node.left, ast.List) and len(node.left.values) != len(node.right.values):
+            self.log_type_error(f'Line {node.line_number}: Operation {node.operator} on lists'
+                ' with diferent sizes!')
+        return type1
 
     def visit_Continue(self, node):
         if self.loop_count == 0:

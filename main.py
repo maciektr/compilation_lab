@@ -108,14 +108,16 @@ def main():
     ast = parser.parse(text)
     move_auto_files()
 
+    if not ast:
+        exit_fail('Cannot run your program: returning.')
+
     if '--print_ast' in options:
         ast.print_tree()
 
     type_checker = TypeChecker()
     type_checker(ast)
     if not type_checker.accepted:
-        print('Cannot run your program: returning.')
-        return
+        exit_fail('Cannot run your program: returning.')
 
     interpreter = Interpreter()
     interpreter(ast)

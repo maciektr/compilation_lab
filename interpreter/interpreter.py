@@ -61,6 +61,16 @@ class Interpreter:
         if isinstance(node.left, ast.Variable):
             self.memstack[node.left.variable_name] = right
 
+    @when(ast.InstructionBlock)
+    def visit(self, node):
+        self.memstack.push(node.name)
+        try:
+            self(node.instructions)
+        except InterpreterException as e:
+            self.memstack.pop()
+            raise e
+        self.memstack.pop()
+
     @when(ast.While)
     def visit(self, node):
         r = None

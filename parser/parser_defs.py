@@ -4,11 +4,11 @@ import ast.ast as ast
 precedence = (
     ("nonassoc", 'IFX'),
     ('left', 'LESSTHAN', 'GREATERTHAN', 'LESSOREQ', 'GREATEROREQ', 'NOTEQ', 'EQUAL'),
+    ('right', 'RANGEOP'),
     ('left', '+', '-'),
     ('left', '*', '/'),
     ('left', 'DOTADD', 'DOTSUB'),
     ('left', 'DOTMUL', 'DOTDIV'),
-    ('right', 'RANGEOP'),
     ('nonassoc', 'ELSE'),
 )
 
