@@ -18,6 +18,9 @@ def exit_ok(message: str=None):
 
 
 class GenericVisit:
+    def __call__(self):
+        pass
+
     def generic_visit(self, node):
         """
         Called if no explicit visitor function exists for a node.
