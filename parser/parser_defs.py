@@ -1,14 +1,15 @@
 import ast.ast as ast
+from utils import stderr_print
 
 
 precedence = (
     ("nonassoc", 'IFX'),
     ('left', 'LESSTHAN', 'GREATERTHAN', 'LESSOREQ', 'GREATEROREQ', 'NOTEQ', 'EQUAL'),
+    ('right', 'RANGEOP'),
     ('left', '+', '-'),
     ('left', '*', '/'),
     ('left', 'DOTADD', 'DOTSUB'),
     ('left', 'DOTMUL', 'DOTDIV'),
-    ('right', 'RANGEOP'),
     ('nonassoc', 'ELSE'),
 )
 
@@ -19,9 +20,10 @@ start = 'PROGRAM'
 
 def p_error(p):
     if p:
-        print("Syntax error at line {0}: LexToken({1}, '{2}')".format(p.lineno, p.type, p.value))
+        stderr_print("Syntax error at line {0}: LexToken({1}, '{2}')"\
+            .format(p.lineno, p.type, p.value))
     else:
-        print("Unexpected end of input")
+        stderr_print("Unexpected end of input")
 
 def p_program(p):
     """PROGRAM : INSTRUCTIONS """
@@ -228,7 +230,7 @@ def p_expression_id(p):
 
 def p_expression_parenthese(p):
     """EXPRESSION : '(' EXPRESSION ')'"""
-    p[0] = p[1]
+    p[0] = p[2]
 
 def p_new_dimension(p):
     """DIMENSION : INTNUM """
@@ -256,7 +258,7 @@ def p_expression_ones(p):
     )
 
 def p_expression_eye(p):
-    """EXPRESSION : EYE '(' DIMENSION ')'"""
+    """EXPRESSION : EYE '(' INTNUM ')'"""
     p[0] = ast.Eye(
         value=p[3],
         line_number=p.lexer.lineno,

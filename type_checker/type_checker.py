@@ -1,6 +1,6 @@
 import ast
 from type_checker.symbol_table import SymbolTable
-
+from utils import stderr_print, GenericVisit
 
 
 class VariableTypes:
@@ -37,9 +37,10 @@ class NonValidVariableType(Exception):
     pass
 
 
-class NodeVisitor:
+class NodeVisitor(GenericVisit):
     def __init__(self):
         self.variable_types = VariableTypes()
+        self.called = False
 
     def __call__(self, node):
         visitor = self.generic_visit
@@ -48,25 +49,11 @@ class NodeVisitor:
             method = f'visit_{node.name}'
             visitor = getattr(self, method, self.generic_visit)
         return_type = visitor(node)
+        self.called = True
         if return_type and return_type not in self.variable_types:
             raise NonValidVariableType(f'Visitor {method} has returned a'
                 ' non valid type of {return_type}.')
         return return_type
-
-    def generic_visit(self, node):
-        """
-        Called if no explicit visitor function exists for a node.
-        """
-        if isinstance(node, list):
-            for element in node:
-                self(element)
-            return
-
-        if not node or not hasattr(node, 'children'):
-            return
-
-        for child in node.children:
-            self(child)
 
 # invalid-name no-self-use too-many-public-methods unused-argument
 # pylint: disable=C0103 R0201 R0904 W0613
@@ -76,9 +63,15 @@ class TypeChecker(NodeVisitor):
         super().__init__()
         self.symbol_table = SymbolTable('__type_checker__')
         self.loop_count = 0
+        self.accepted_state = True
+
+    @property
+    def accepted(self):
+        return self.called and self.accepted_state
 
     def log_type_error(self, message: str, line_number = None):
-        print((f'Line {line_number}: ' if line_number else '') + message)
+        self.accepted_state = False
+        stderr_print((f'Line {line_number}: ' if line_number else '') + message)
 
     def visit_Dimension(self, node):
         return 'DIMENSION'
@@ -197,7 +190,7 @@ class TypeChecker(NodeVisitor):
                 i += 1
             return True
 
-        if  isinstance(array, (ast.Eye, ast.Ones, ast.Zeros)):
+        if  isinstance(array, (ast.Ones, ast.Zeros)):
             return __do_check(array.value.values, bounds)
 
         to_validate = [array[0]]
@@ -222,7 +215,7 @@ class TypeChecker(NodeVisitor):
 
     def visit_Eye(self, node):
         type1 = self(node.value)
-        if type1 != 'DIMENSION':
+        if type1 != 'INT' and not isinstance(node.value, int):
             self.log_type_error(f'Line {node.line_number}: Incorrect Eye size')
         return 'LIST'
 
@@ -246,16 +239,17 @@ class TypeChecker(NodeVisitor):
     def visit_BinaryOperation(self, node):
         type1 = self(node.left)
         type2 = self(node.right)
-        if type1 != type2:
+        if type1 != type2 and False:
             self.log_type_error(f'Line {node.line_number}: Type mismatch in {node.operator}'
                 ' operation')
-        else:
-            if node.operator in ['.+', './', '.*', '.-'] and type1 != 'LIST':
-                self.log_type_error(f'Line {node.line_number}: Operation {node.operator} allowed'
-                    ' only for matrices')
-            if isinstance(node.left, ast.List) and len(node.left.values) != len(node.right.values):
-                self.log_type_error(f'Line {node.line_number}: Operation {node.operator} on lists'
-                    ' with diferent sizes!')
+            return None
+        if node.operator in ['.+', './', '.*', '.-'] and type1 != 'LIST':
+            self.log_type_error(f'Line {node.line_number}: Operation {node.operator} allowed'
+                ' only for matrices')
+        if isinstance(node.left, ast.List) and len(node.left.values) != len(node.right.values):
+            self.log_type_error(f'Line {node.line_number}: Operation {node.operator} on lists'
+                ' with diferent sizes!')
+        return type1
 
     def visit_Continue(self, node):
         if self.loop_count == 0:
@@ -273,9 +267,10 @@ class TypeChecker(NodeVisitor):
         def get_variable_name(variable):
             if isinstance(variable, ast.Variable):
                 return variable.variable_name
-            if isinstance(variable, ast.Partition):
-                return variable.variable
             return None
+
+        if isinstance(node.left, ast.Partition):
+            return
 
         right_type = self(node.right)
         left_name = get_variable_name(node.left)
