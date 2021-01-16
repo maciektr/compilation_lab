@@ -66,6 +66,9 @@ class Interpreter:
 
         if isinstance(node.left, ast.Variable):
             self.memstack[node.left.variable_name] = right
+        elif isinstance(node.left, ast.Partition):
+            bounds = self.__part_bounds(node.left)
+            self.memstack[node.left.variable][bounds] = right
 
     @when(ast.InstructionBlock)
     def visit(self, node):
@@ -88,7 +91,7 @@ class Interpreter:
             except BreakException:
                 break
         return r
-    
+
     @when(ast.If)
     def visit(self, node):
         r = None
@@ -141,7 +144,33 @@ class Interpreter:
     @when(ast.Eye)
     def visit(self, node):
         dim = self(node.value)
+        if not dim and isinstance(node.value, int):
+            dim = node.value
         return np.eye(dim)
+
+    @when(ast.Ones)
+    def visit(self, node):
+        return np.ones(node.value.values)
+
+    @when(ast.Zeros)
+    def visit(self, node):
+        return np.zeros(node.value.values)
+
+    @staticmethod
+    def __part_bounds(node):
+        def parse_bound(bound):
+            if isinstance(bound, int):
+                return bound
+            if isinstance(bound, ast.IntNum):
+                return bound.value
+            if isinstance(bound, ast.ValueRange):
+                return slice(parse_bound(bound.start), parse_bound(bound.end))
+        return tuple(map(parse_bound, node.bounds.values))
+
+    @when(ast.Partition)
+    def visit(self, node):
+        bounds = self.__part_bounds(node)
+        return self.memstack[node.variable][bounds]
 
     @when(ast.Dimension)
     def visit(self, node):

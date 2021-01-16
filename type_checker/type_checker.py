@@ -230,7 +230,7 @@ class TypeChecker(NodeVisitor):
 
     def visit_Eye(self, node):
         type1 = self(node.value)
-        if type1 != 'INT':
+        if type1 != 'INT' and not isinstance(node.value, int):
             self.log_type_error(f'Line {node.line_number}: Incorrect Eye size')
         return 'LIST'
 
@@ -282,9 +282,10 @@ class TypeChecker(NodeVisitor):
         def get_variable_name(variable):
             if isinstance(variable, ast.Variable):
                 return variable.variable_name
-            if isinstance(variable, ast.Partition):
-                return variable.variable
             return None
+
+        if isinstance(node.left, ast.Partition):
+            return
 
         right_type = self(node.right)
         left_name = get_variable_name(node.left)
