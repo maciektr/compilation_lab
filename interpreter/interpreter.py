@@ -186,6 +186,11 @@ class Interpreter:
             res.append(self(v))
         return np.array(res)
 
+    @when(ast.Transpose)
+    def visit(self, node):
+        t = self.memstack[node.target.variable_name]
+        return np.transpose(t)
+
     @when(ast.Print)
     def visit(self, node):
         out_print(self(node.value))
