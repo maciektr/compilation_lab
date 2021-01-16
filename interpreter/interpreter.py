@@ -1,16 +1,19 @@
 import sys
+import ast
+
 import numpy as np
 
-import ast
-from type_checker.symbol_table import SymbolTable
 from interpreter.memory import MemoryStack
-from interpreter.exceptions import  *
-from interpreter.visit import *
-from interpreter.visit import default
+from interpreter.exceptions import BreakException, ContinueException, InterpreterException
+from interpreter.visit import default, when, on
 from interpreter.operators import Operators
 from utils import stdout_print
 
 sys.setrecursionlimit(10000)
+
+# function-redefined no-self-use
+# pylint: disable=E0102 R0201
+
 
 DEBUG = False
 def debug_print(*args):
@@ -34,7 +37,7 @@ class Interpreter:
     def visit(self, node):
         pass
 
-    @default('node')
+    @default()
     def visit(self, node):
         if isinstance(node, list):
             for element in node:
@@ -53,9 +56,9 @@ class Interpreter:
 
     @when(ast.BinaryOperation)
     def visit(self, node):
-        r1 = self(node.left)
-        r2 = self(node.right)
-        return self.operators(node.operator)(r1, r2)
+        left = self(node.left)
+        right = self(node.right)
+        return self.operators(node.operator)(left, right)
 
     @when(ast.Assign)
     def visit(self, node):
@@ -75,36 +78,37 @@ class Interpreter:
         self.memstack.push(node.name)
         try:
             self(node.instructions)
-        except InterpreterException as e:
+        except InterpreterException as error:
             self.memstack.pop()
-            raise e
+            raise error
         self.memstack.pop()
 
     @when(ast.While)
     def visit(self, node):
-        r = None
+        res = None
         while self(node.condition):
             try:
-                r = self(node.instructions)
+                res = self(node.instructions)
             except ContinueException:
                 pass
             except BreakException:
                 break
-        return r
+        return res
 
     @when(ast.If)
     def visit(self, node):
-        r = None
+        res = None
         if self(node.condition):
-            r = self(node.instructions)
-        else: r = self(node.else_instruction)
-        return r
+            res = self(node.instructions)
+        else:
+            res = self(node.else_instruction)
+        return res
 
     @when(ast.For)
     def visit(self, node):
-        range = node.value_range
-        r_start = self(range.start)
-        r_end = self(range.end)
+        bound = node.value_range
+        r_start = self(bound.start)
+        r_end = self(bound.end)
         self.memstack[node.iterator] = r_start
         while self.memstack[node.iterator] <= r_end:
             try:
@@ -114,7 +118,6 @@ class Interpreter:
             except BreakException:
                 break
             self.memstack[node.iterator] += 1
-
 
     @when(ast.Break)
     def visit(self, node):
@@ -137,9 +140,9 @@ class Interpreter:
 
     @when(ast.Logical)
     def visit(self, node):
-        r1 = self(node.left)
-        r2 = self(node.right)
-        return self.operators(node.operator)(r1, r2)
+        left = self(node.left)
+        right = self(node.right)
+        return self.operators(node.operator)(left, right)
 
     @when(ast.Eye)
     def visit(self, node):
@@ -165,6 +168,7 @@ class Interpreter:
                 return bound.value
             if isinstance(bound, ast.ValueRange):
                 return slice(parse_bound(bound.start), parse_bound(bound.end))
+            return None
         return tuple(map(parse_bound, node.bounds.values))
 
     @when(ast.Partition)
@@ -182,14 +186,14 @@ class Interpreter:
     @when(ast.List)
     def visit(self, node):
         res = []
-        for v in node.values:
-            res.append(self(v))
+        for val in node.values:
+            res.append(self(val))
         return np.array(res)
 
     @when(ast.Transpose)
     def visit(self, node):
-        t = self.memstack[node.target.variable_name]
-        return np.transpose(t)
+        val = self.memstack[node.target.variable_name]
+        return np.transpose(val)
 
     @when(ast.Print)
     def visit(self, node):

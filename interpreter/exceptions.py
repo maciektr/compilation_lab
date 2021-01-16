@@ -3,6 +3,7 @@ class InterpreterException(Exception):
 
 class ReturnValueException(InterpreterException):
     def __init__(self,value):
+        super().__init__()
         self.value = value
 
 class BreakException(InterpreterException):

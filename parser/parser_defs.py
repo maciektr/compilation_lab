@@ -20,7 +20,8 @@ start = 'PROGRAM'
 
 def p_error(p):
     if p:
-        stderr_print("Syntax error at line {0}: LexToken({1}, '{2}')".format(p.lineno, p.type, p.value))
+        stderr_print("Syntax error at line {0}: LexToken({1}, '{2}')"\
+            .format(p.lineno, p.type, p.value))
     else:
         stderr_print("Unexpected end of input")
 

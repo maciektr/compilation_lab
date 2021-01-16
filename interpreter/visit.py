@@ -2,6 +2,9 @@ import inspect
 
 __all__ = ['on', 'when']
 
+# invalid-name deprecated-method
+# pylint: disable=C0103 W1505
+
 
 def on(param_name):
     def f(fn):
@@ -25,7 +28,7 @@ def when(param_type):
         return ff
     return f
 
-def default(param_name):
+def default():
     def f(fn):
         frame = inspect.currentframe().f_back
         func_name = fn.func_name if 'func_name' in dir(fn) else fn.__name__
@@ -41,7 +44,7 @@ def default(param_name):
     return f
 
 
-class Dispatcher(object):
+class Dispatcher:
     def __init__(self, param_name, fn):
         self.param_index = self.__argspec(fn).args.index(param_name)
         self.param_name = param_name
@@ -53,13 +56,13 @@ class Dispatcher(object):
         d = self.targets.get(typ)
         if d is not None:
             return d(*args, **kw)
-        elif self.default_target:
+        if self.default_target:
             return self.default_target(*args, **kw)
-        else:
-            issub = issubclass
-            t = self.targets
-            ks = iter(t)
-            return [t[k](*args, **kw) for k in ks if issub(typ, k)]
+
+        issub = issubclass
+        t = self.targets
+        ks = iter(t)
+        return [t[k](*args, **kw) for k in ks if issub(typ, k)]
 
     def set_default(self, target):
         self.default_target = target
@@ -72,5 +75,5 @@ class Dispatcher(object):
         # Support for Python 3 type hints requires inspect.getfullargspec
         if hasattr(inspect, 'getfullargspec'):
             return inspect.getfullargspec(fn)
-        else:
-            return inspect.getargspec(fn)
+
+        return inspect.getargspec(fn)
