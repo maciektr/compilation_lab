@@ -205,7 +205,7 @@ class TypeChecker(NodeVisitor):
                 i += 1
             return True
 
-        if  isinstance(array, (ast.Eye, ast.Ones, ast.Zeros)):
+        if  isinstance(array, (ast.Ones, ast.Zeros)):
             return __do_check(array.value.values, bounds)
 
         to_validate = [array[0]]
@@ -230,7 +230,7 @@ class TypeChecker(NodeVisitor):
 
     def visit_Eye(self, node):
         type1 = self(node.value)
-        if type1 != 'DIMENSION':
+        if type1 != 'INT':
             self.log_type_error(f'Line {node.line_number}: Incorrect Eye size')
         return 'LIST'
 

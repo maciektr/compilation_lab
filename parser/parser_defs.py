@@ -257,7 +257,7 @@ def p_expression_ones(p):
     )
 
 def p_expression_eye(p):
-    """EXPRESSION : EYE '(' DIMENSION ')'"""
+    """EXPRESSION : EYE '(' INTNUM ')'"""
     p[0] = ast.Eye(
         value=p[3],
         line_number=p.lexer.lineno,
