@@ -1,6 +1,6 @@
 import ast
 from type_checker.symbol_table import SymbolTable
-
+from utils import stderr_print
 
 
 class VariableTypes:
@@ -86,7 +86,7 @@ class TypeChecker(NodeVisitor):
 
     def log_type_error(self, message: str, line_number = None):
         self.accepted_state = False
-        print((f'Line {line_number}: ' if line_number else '') + message)
+        stderr_print((f'Line {line_number}: ' if line_number else '') + message)
 
     def visit_Dimension(self, node):
         return 'DIMENSION'

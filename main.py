@@ -6,29 +6,21 @@ from parser import Parser
 from scanner import Scanner
 from type_checker import TypeChecker
 from interpreter import Interpreter
+from utils import exit_fail, exit_ok, stderr_print
 
 OPTIONS = ['path=', 'lexer', 'clear', 'zip', 'use_cache', 'print_ast']
 PARSER_AUTO_FILES = ['parser/parser.out', 'parser/parsetab.py']
 OUT_FOLDER = 'out'
 
 
-def exit_fail(message: str=None):
-    if message:
-        print(message)
-    sys.exit(1)
-
-
-def exit_ok(message: str=None):
-    if message:
-        print(message)
-    sys.exit(0)
-
+def print_main(*args):
+    stderr_print(*args)
 
 def run_lexer(scanner: Scanner, text: str):
     scanner(text)
     for tok in scanner.token():
-        print("(%d, %d): %s(%s)" % tok)
-        print(tok)
+        print_main("(%d, %d): %s(%s)" % tok)
+        print_main(tok)
 
 
 def rm_file(path):
@@ -79,7 +71,7 @@ def main():
         if '--path' in options:
             filename = options['--path']
 
-        print(f'Opening file: {filename}')
+        print_main(f'Opening file: {filename}')
         with open(filename, "r") as file:
             text = file.read()
     except IOError:

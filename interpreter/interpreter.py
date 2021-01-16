@@ -8,6 +8,7 @@ from interpreter.exceptions import  *
 from interpreter.visit import *
 from interpreter.visit import default
 from interpreter.operators import Operators
+from utils import stdout_print
 
 sys.setrecursionlimit(10000)
 
@@ -15,6 +16,11 @@ DEBUG = False
 def debug_print(*args):
     if DEBUG:
         print(*args)
+
+def out_print(*args):
+    stdout_print(*args)
+
+
 class Interpreter:
     def __init__(self):
         self.memstack = MemoryStack()
@@ -138,4 +144,4 @@ class Interpreter:
 
     @when(ast.Print)
     def visit(self, node):
-        print(self(node.value))
+        out_print(self(node.value))
