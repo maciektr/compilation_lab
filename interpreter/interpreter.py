@@ -88,6 +88,14 @@ class Interpreter:
             except BreakException:
                 break
         return r
+    
+    @when(ast.If)
+    def visit(self, node):
+        r = None
+        if self(node.condition):
+            r = self(node.instructions)
+        else: r = self(node.else_instruction)
+        return r
 
     @when(ast.For)
     def visit(self, node):

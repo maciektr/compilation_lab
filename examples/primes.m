@@ -1,5 +1,6 @@
 for n = 2:100 {
     p = 1;
+
     for d = 2:n-1 {
         nc = n;
         while (nc > 0) nc -= d;
