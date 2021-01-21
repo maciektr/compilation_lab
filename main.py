@@ -68,7 +68,7 @@ def main():
         exit_fail(err)
 
     try:
-        filename = 'examples/init.m'
+        filename = 'examples/sqrt.m'
         if '--path' in options:
             filename = options['--path']
 
